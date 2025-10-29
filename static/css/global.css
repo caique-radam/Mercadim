@@ -1,20 +1,257 @@
+:root {
+    --sidebar-width: 250px;
+    --topbar-height: 70px;
+    --primary-color: #6366f1;
+    --sidebar-bg: #1a1d3d;
+    --sidebar-active: #5558d9;
+}
+
 body {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
 }
+
 .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    padding-top: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar .brand {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 0 20px 30px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 20px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-section {
+    color: #8b8d98;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 20px 20px 10px;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #8b8d98;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.sidebar-menu li a:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.sidebar-menu li a.active {
+    background: var(--sidebar-active);
+    color: white;
+    border-left: 3px solid #fff;
+}
+
+.sidebar-menu li a i {
+    width: 24px;
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.badge-new {
+    background: #6366f1;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: auto;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
     min-height: 100vh;
-    background-color: #2c3e50;
 }
-.sidebar .nav-link {
-    color: #ffffff;
+
+.topbar {
+    background: white;
+    height: var(--topbar-height);
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e7eb;
 }
-.sidebar .nav-link.active {
-    background-color: #1abc9c;
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
-.card-icon {
+
+.topbar-btn {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.topbar-btn .badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-size: 0.65rem;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e5e7eb;
+}
+
+.content-area {
+    padding: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    height: 100%;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.stat-icon.purple {
+    background: #f3f4f6;
+    color: #8b5cf6;
+}
+
+.stat-icon.orange {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.stat-value {
     font-size: 2rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 5px;
 }
-.top-navbar {
-    background-color: #007bff;
-    color: #fff;
+
+.stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.stat-change {
+    color: #10b981;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.stat-change.negative {
+    color: #ef4444;
+}
+
+.chart-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-top: 20px;
+}
+
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.time-filter {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.progress-section {
+    margin-top: 20px;
+}
+
+.progress-item {
+    margin-bottom: 20px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+.btn-view-details {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+}
+
+canvas {
+    max-height: 300px;
 }
