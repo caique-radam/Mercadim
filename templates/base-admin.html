@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel - Mercadim{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+        <h4 class="text-white mb-4">Bootstrap <br>Admin</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="#" class="nav-link active"><i class="bi bi-house"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-text"></i> Forms</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-table"></i> Tables</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-bar-chart"></i> Charts</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-grid"></i> UI Elements</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-person"></i> Users</a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-gear"></i> Settings</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+        <!-- Navbar -->
+        <nav class="navbar top-navbar px-3 py-2">
+            <div class="d-flex justify-content-between w-100">
+                <button class="btn btn-light d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"><i class="bi bi-list"></i></button>
+                <div>
+                    <a href="#" class="text-white me-3"><i class="bi bi-link-45deg"></i> Quick Links</a>
+                    <span class="text-white"><i class="bi bi-person-circle"></i> John Doe</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Cards -->
+        <div class="container-fluid p-4">
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-cart3 card-icon text-info"></i>
+                            <h5 class="card-title mt-2">New Orders</h5>
+                            <p class="card-text h4">6,267</p>
+                            <small class="text-muted">Updated every 30 minutes</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-cash-stack card-icon text-success"></i>
+                            <h5 class="card-title mt-2">Revenue</h5>
+                            <p class="card-text h4">$180,900.00</p>
+                            <small class="text-muted">In this current month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-eye card-icon text-purple"></i>
+                            <h5 class="card-title mt-2">Page Views</h5>
+                            <p class="card-text h4">28,210</p>
+                            <small class="text-muted">In the last 24 hours</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-envelope card-icon text-warning"></i>
+                            <h5 class="card-title mt-2">Support Requests</h5>
+                            <p class="card-text h4">75</p>
+                            <small class="text-muted">Active in the last 7 days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More dashboard content can go here -->
+        </div>
+    </div>
+</div>
+
+{% endblock %}

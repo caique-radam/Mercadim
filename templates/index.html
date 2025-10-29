@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Mercadim{% endblock %}
+
+{% block content %}
+<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-primary text-white">
+  <div class="row w-100 mx-0 justify-content-center align-items-center">
+
+    <!-- Lado esquerdo -->
+    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0 px-5">
+      <h1 class="fw-bold display-5 mb-3">We make digital products that drive you to stand out.</h1>
+      <p class="lead">
+        We write words, take photos, make videos, and interact with artificial intelligence.
+      </p>
+    </div>
+
+    <!-- Lado direito (formulário de login) -->
+    <div class="col-lg-4">
+      <div class="card shadow-lg border-0 rounded-4 p-4 bg-white text-dark">
+        <div class="card-body">
+          {% include 'login-form.html' %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
