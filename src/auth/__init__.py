@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect
 
-auth_bp = Blueprint("auth", __name__, template_folder="templates")
+auth_bp = Blueprint("auth", __name__, template_folder="templates", url_prefix="/auth")
 
 # LOGIN
 # RECUPERAR SENHA
@@ -8,7 +8,7 @@ auth_bp = Blueprint("auth", __name__, template_folder="templates")
 
 @auth_bp.route("/login")
 def login():
-    return render_template('login-form.html')
+    return "LOGIN"
 
 @auth_bp.route("/forgot-password")
 def forgot_password():
