@@ -13,7 +13,7 @@ def init_supabase(app):
 
     _supabase_client = create_client(url, key)
 
-def get_client() -> Client:
+def supabase_client() -> Client:
     """Retorna o cliente Supabase"""
     if _supabase_client is None:
         raise RuntimeError("Supabase client não inicializado. Chame init_supabase(app) primeiro")

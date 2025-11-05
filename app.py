@@ -1,5 +1,7 @@
-from flask import Flask, render_template
-from src.auth import auth_bp
+from flask import Flask
+from flask_session import Session
+
+from src.modules.auth import auth_bp
 from config import Config
 from src.supabase import init_supabase
 import os
@@ -12,6 +14,9 @@ app = Flask(
 # Aplicar Config
 app.config.from_mapping(Config)
 
+# Inicializa sessão
+Session(app)
+
 # Inicializar Supabase
 init_supabase(app)
 
@@ -19,8 +24,22 @@ init_supabase(app)
 app.register_blueprint(auth_bp)
 
 @app.route('/')
-def home():
-    return render_template('base-admin.html')
+def index():
+    """Redireciona para login ou dashboard dependendo do estado de autenticação"""
+    from flask import session
+    from flask import redirect, url_for
+    if 'user' in session:
+        return "Dashboard", 200
+    return redirect(url_for('auth.login'))
+
+# Tratamento de erros
+@app.errorhandler(404)
+def not_found(error):
+    return "Página não encontrada", 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return "Erro interno do servidor", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
