@@ -72,6 +72,8 @@ A aplicação redirecionará automaticamente para a página de login se você n�
 
 ## 🔧 Estrutura do Projeto
 
+O projeto está organizado de forma modular e didática. Para uma explicação detalhada, consulte o arquivo [ESTRUTURA.md](ESTRUTURA.md).
+
 ```
 Mercadim/
 ├── app.py                 # Arquivo principal da aplicação Flask
@@ -80,13 +82,14 @@ Mercadim/
 ├── .env                   # Variáveis de ambiente (não versionado)
 ├── .env-exemplo           # Exemplo de variáveis de ambiente
 ├── src/
-│   ├── auth/             # Módulo de autenticação
-│   ├── profile/          # Módulo de perfil
-│   ├── supabase.py       # Cliente Supabase
-│   └── utils/            # Utilitários
+│   ├── core/             # Infraestrutura base (database, etc.)
+│   ├── common/           # Componentes compartilhados (utils, interface)
+│   └── features/         # Módulos de negócio (auth, profile, user)
 ├── templates/            # Templates HTML
 └── static/               # Arquivos estáticos (CSS, JS, etc.)
 ```
+
+**📖 Para entender melhor a organização:** Leia o arquivo [ESTRUTURA.md](ESTRUTURA.md) que explica em detalhes cada pasta e como adicionar novas features.
 
 ## 📝 Notas Importantes
 

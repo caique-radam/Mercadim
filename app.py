@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_session import Session
 
-from src.auth import auth_bp
-from src.profile import profile_bp
+from src.features.auth import auth_bp
+from src.features.profile import profile_bp
 from config import Config
-from src.supabase import init_supabase
-from src.interface import get_interface_context
+from src.core import init_supabase
+from src.common.interface import get_interface_context
 import os
 from flask import render_template
 

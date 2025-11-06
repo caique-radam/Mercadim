@@ -13,8 +13,8 @@ from .service import (
     update_password,
     refresh_session
 )
-from src.utils.funcs import is_valid_email, is_strong_password
-from src.profile.service import get_logged_profile
+from src.common.utils import is_valid_email, is_strong_password
+from src.features.profile.service import get_logged_profile
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
