@@ -21,7 +21,10 @@ Config = {
     "SECRET_KEY": os.environ.get('SECRET_KEY'),
     "SUPABASE_URL": os.environ.get('SUPABASE_URL'),
     "SUPABASE_KEY": os.environ.get('SUPABASE_KEY'),
-    "SESSION_TYPE": 'filesystem',
+    # DECISÃO: Usar 'filesystem' em desenvolvimento e 'null' (cookies) em produção
+    # Railway e outros serviços de cloud não têm sistema de arquivos persistente
+    # Sessões em cookies são adequadas para produção e funcionam com múltiplos workers
+    "SESSION_TYPE": 'null' if IS_PRODUCTION else 'filesystem',
     "SESSION_PERMANENT": True,
     "PERMANENT_SESSION_LIFETIME": timedelta(days=7),
     # DECISÃO: SESSION_COOKIE_SECURE apenas em produção
