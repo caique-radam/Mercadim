@@ -40,17 +40,17 @@ Mercadim/
 │       │
 │       ├── auth/          # Módulo de Autenticação
 │       │   ├── __init__.py        # Exporta blueprint e decorators
-│       │   ├── routes.py          # Rotas de autenticação (login, logout, etc.)
-│       │   ├── service.py         # Lógica de negócio de autenticação
-│       │   └── decorators.py      # Decorators (@login_required, @admin_required, etc.)
+│       │   ├── auth_routes.py     # Rotas de autenticação (login, logout, etc.)
+│       │   ├── auth_service.py    # Lógica de negócio de autenticação
+│       │   └── auth_decorators.py # Decorators (@login_required, @admin_required, etc.)
 │       │
 │       ├── profile/       # Módulo de Perfil
 │       │   ├── __init__.py        # Blueprint e rotas de perfil
-│       │   └── service.py         # Lógica de negócio de perfil
+│       │   └── profile_service.py # Lógica de negócio de perfil
 │       │
 │       └── user/          # Módulo de Usuários
 │           ├── __init__.py
-│           └── service.py         # Lógica de negócio de usuários
+│           └── user_service.py   # Lógica de negócio de usuários
 │
 ├── templates/             # Templates HTML (Jinja2)
 │   ├── base.html
@@ -115,11 +115,18 @@ Cada feature segue um padrão consistente:
 
 ```
 feature/
-├── __init__.py      # Exporta blueprint e principais componentes
-├── routes.py        # Rotas HTTP (blueprints Flask)
-├── service.py       # Lógica de negócio
-└── decorators.py    # Decorators específicos (se necessário)
+├── __init__.py          # Exporta blueprint e principais componentes
+├── [feature]_routes.py  # Rotas HTTP (blueprints Flask)
+├── [feature]_service.py # Lógica de negócio
+└── [feature]_decorators.py # Decorators específicos (se necessário)
 ```
+
+**Exemplo:** O módulo `auth` tem:
+- `auth_routes.py` (não apenas `routes.py`)
+- `auth_service.py` (não apenas `service.py`)
+- `auth_decorators.py` (não apenas `decorators.py`)
+
+Isso evita confusão quando há múltiplos arquivos abertos e facilita a identificação do módulo.
 
 **Exemplo - Módulo Auth:**
 ```python
@@ -139,7 +146,7 @@ from src.features.auth import login, sign_out
 from src.features.profile import profile_bp
 
 # Importar serviços
-from src.features.profile.service import get_user_profile
+from src.features.profile.profile_service import get_user_profile
 ```
 
 ## 🎨 Princípios de Organização
@@ -161,9 +168,9 @@ Nomes descritivos e organização lógica facilitam encontrar código rapidament
 ## 📝 Convenções de Nomenclatura
 
 ### Arquivos
-- `routes.py` - Rotas HTTP (blueprints)
-- `service.py` - Lógica de negócio
-- `decorators.py` - Decorators Flask
+- `[feature]_routes.py` - Rotas HTTP (blueprints) - Ex: `auth_routes.py`, `profile_routes.py`
+- `[feature]_service.py` - Lógica de negócio - Ex: `auth_service.py`, `profile_service.py`
+- `[feature]_decorators.py` - Decorators Flask (específico do módulo) - Ex: `auth_decorators.py`
 - `utils.py` - Funções utilitárias
 
 ### Pastas
@@ -174,10 +181,10 @@ Nomes descritivos e organização lógica facilitam encontrar código rapidament
 ## 🔍 Como Encontrar Código
 
 ### Buscar uma rota de autenticação?
-→ `src/features/auth/routes.py`
+→ `src/features/auth/auth_routes.py`
 
 ### Buscar lógica de negócio de perfil?
-→ `src/features/profile/service.py`
+→ `src/features/profile/profile_service.py`
 
 ### Buscar validação de email?
 → `src/common/utils.py`
@@ -196,11 +203,11 @@ Para adicionar uma nova feature (ex: `products`):
 ```bash
 mkdir -p src/features/products
 touch src/features/products/__init__.py
-touch src/features/products/routes.py
-touch src/features/products/service.py
+touch src/features/products/products_routes.py
+touch src/features/products/products_service.py
 ```
 
-2. **Criar blueprint em `routes.py`:**
+2. **Criar blueprint em `products_routes.py`:**
 ```python
 from flask import Blueprint
 
@@ -214,7 +221,7 @@ def list_products():
 
 3. **Exportar em `__init__.py`:**
 ```python
-from .routes import products_bp
+from .products_routes import products_bp
 
 __all__ = ['products_bp']
 ```

@@ -3,7 +3,7 @@ Blueprint de Profile
 Rotas para gerenciamento de perfil do usuário
 """
 from flask import Blueprint, render_template, redirect, url_for, session
-from src.features.auth.decorators import login_required
+from src.features.auth.auth_decorators import login_required
 
 profile_bp = Blueprint("profile", __name__, url_prefix="/profile", template_folder="templates")
 
