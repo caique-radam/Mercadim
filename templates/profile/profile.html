@@ -1,0 +1,61 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Meu Perfil - Mercadim{% endblock %}
+
+{% block content_area %}
+<div class="row">
+    <div class="col-12">
+        <div class="stat-card">
+            <h4 class="mb-4">Meu Perfil</h4>
+            
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    {% set user_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
+                    {% set avatar_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
+                    <img src="https://ui-avatars.com/api/?name={{ avatar_name|urlencode }}&background=6366f1&color=fff&size=150"
+                         alt="Avatar" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+                    <h5>{{ user_name }}</h5>
+                    <p class="text-muted mb-0">{{ user.email }}</p>
+                </div>
+                
+                <div class="col-md-8">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nome Completo</label>
+                        <p class="mb-0">{{ user_name }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Primeiro Nome</label>
+                        <p class="mb-0">{{ user.first_name or 'Não informado' }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Último Nome</label>
+                        <p class="mb-0">{{ user.last_name or 'Não informado' }}</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Email</label>
+                        <p class="mb-0">{{ user.email }}</p>
+                    </div>
+                    
+                    {% if user.profile and user.profile.role %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Função</label>
+                        <p class="mb-0">{{ user.profile.role|title }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>
+                            Editar Perfil
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

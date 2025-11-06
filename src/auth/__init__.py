@@ -1,15 +1,31 @@
-from flask import Blueprint, render_template, redirect
+"""
+Módulo de Autenticação
 
-auth_bp = Blueprint("auth", __name__, template_folder="templates")
+DECISÃO: Exportar todos os componentes principais do módulo
+Isso facilita imports e uso em outras partes da aplicação
+"""
+from .routes import auth_bp
+from .decorators import login_required, admin_required, guest_only, role_required
+from .service import (
+    login,
+    get_user,
+    sign_out,
+    reset_password_email,
+    update_password,
+    refresh_session
+)
 
-# LOGIN
-# RECUPERAR SENHA
-# ROTA PROTEGIDA
-
-@auth_bp.route("/login")
-def login():
-    return render_template('login-form.html')
-
-@auth_bp.route("/forgot-password")
-def forgot_password():
-    return "FORGOT PASSWORD"
+__all__ = [
+    'auth_bp',
+    'login_required',
+    'admin_required',
+    'guest_only',
+    'role_required',
+    # Serviços (exportados para uso avançado, mas normalmente não necessário)
+    'login',
+    'get_user',
+    'sign_out',
+    'reset_password_email',
+    'update_password',
+    'refresh_session',
+]
