@@ -45,4 +45,7 @@ def internal_error(error):
     return "Erro interno do servidor", 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Configuração para Railway e outros ambientes de produção
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV', 'development').lower() != 'production'
+    app.run(host='0.0.0.0', port=port, debug=debug)
