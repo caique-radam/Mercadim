@@ -1,14 +1,49 @@
 :root {
     --sidebar-width: 250px;
     --topbar-height: 70px;
-    --primary-color: #6366f1;
-    --sidebar-bg: #1a1d3d;
-    --sidebar-active: #5558d9;
+    /* === Cores principais === */
+    --color-primary: #00B7B3;
+    --color-secondary: #9C4DCC;
+    --color-accent: #F4B400;
+  
+    /* === Estados === */
+    --color-success: #7CB342;
+    --color-warning: #F57C00;
+    --color-error: #E53935;
+  
+    /* === Fundo e superfícies === */
+    --color-background: #0D1B2A;
+    --color-surface: #1B263B;
+    --color-surface-alt: #24344D;
+  
+    /* === Texto === */
+    --text-primary: #FFFFFF;
+    --text-secondary: #B0BEC5;
+    --text-disabled: #808E9B;
+  
+    /* === Bordas e Divisores === */
+    --border-color: #2E3B55;
+    --divider-color: #374963;
+  
+    /* === Sombras === */
+    --shadow-color: rgba(0, 0, 0, 0.25);
+      
+    /* Sugestões de Uso */
+    /* Botão primário: background: var(--color-primary); color: var(--text-primary);
+
+    Header: background: var(--color-surface);
+
+    Sidebar: background: var(--color-surface-alt);
+
+    Cor de foco/hover: filter: brightness(1.2);
+
+    Cards: background: var(--color-surface); box-shadow: 0 2px 8px var(--shadow-color); */
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
+    background-color: var(--color-background);
+    color: var(--text-primary);
 }
 
 .sidebar {
@@ -17,19 +52,38 @@ body {
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
-    background: var(--sidebar-bg);
+    background: var(--color-surface-alt);
     padding-top: 20px;
     overflow-y: auto;
     z-index: 1000;
 }
 
-.sidebar .brand {
-    color: white;
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 0 20px 30px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 20px;
+.sidebar .brand-logo {
+    width: 100%;
+    height: 100px; /* aumenta a área da logo, pode ajustar entre 80px e 120px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    overflow: hidden;
+}
+
+.sidebar .brand-logo .logo {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(1);
+}
+
+
+.sidebar .brand-logo .logo:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
 }
 
 .sidebar-menu {
@@ -39,7 +93,7 @@ body {
 }
 
 .menu-section {
-    color: #8b8d98;
+    color: var(--text-secondary);
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -51,20 +105,21 @@ body {
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #8b8d98;
+    color: var(--text-secondary);
     text-decoration: none;
     transition: all 0.3s;
 }
 
 .sidebar-menu li a:hover {
     background: rgba(255,255,255,0.05);
-    color: white;
+    color: var(--text-primary);
+    filter: brightness(1.2);
 }
 
 .sidebar-menu li a.active {
-    background: var(--sidebar-active);
-    color: white;
-    border-left: 3px solid #fff;
+    background: var(--color-surface);
+    color: var(--text-primary);
+    border-left: 3px solid var(--color-primary);
 }
 
 .sidebar-menu li a i {
@@ -74,8 +129,8 @@ body {
 }
 
 .badge-new {
-    background: #6366f1;
-    color: white;
+    background: var(--color-secondary);
+    color: var(--text-primary);
     font-size: 0.65rem;
     padding: 2px 8px;
     border-radius: 10px;
@@ -88,13 +143,13 @@ body {
 }
 
 .topbar {
-    background: white;
+    background: var(--color-surface);
     height: var(--topbar-height);
     padding: 0 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .topbar-actions {
@@ -106,10 +161,16 @@ body {
 .topbar-btn {
     background: none;
     border: none;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 1.2rem;
     cursor: pointer;
     position: relative;
+    transition: all 0.3s;
+}
+
+.topbar-btn:hover {
+    color: var(--text-primary);
+    filter: brightness(1.2);
 }
 
 .topbar-btn .badge {
@@ -127,17 +188,47 @@ body {
     padding: 8px 12px;
     border-radius: 8px;
     transition: background-color 0.2s;
+    color: var(--text-primary);
 }
 
 .user-profile:hover {
-    background-color: #f3f4f6;
+    background-color: var(--color-surface-alt);
+    filter: brightness(1.2);
+}
+
+.user-profile .user-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.user-profile .user-role {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.user-profile .user-chevron {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.user-dropdown-menu .dropdown-header .user-name-header {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.user-dropdown-menu .dropdown-header .user-email {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
 }
 
 .user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #e5e7eb;
+    background: var(--color-surface-alt);
+    border: 2px solid var(--border-color);
 }
 
 /* Estilos do Dropdown do Usuário */
@@ -145,41 +236,44 @@ body {
     min-width: 220px;
     padding: 8px 0;
     margin-top: 8px;
-    border: 1px solid #e5e7eb;
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -1px var(--shadow-color);
 }
 
 .user-dropdown-menu .dropdown-item {
     padding: 10px 16px;
     font-size: 0.9rem;
-    color: #374151;
+    color: var(--text-primary);
     transition: background-color 0.2s;
     display: flex;
     align-items: center;
 }
 
 .user-dropdown-menu .dropdown-item:hover {
-    background-color: #f3f4f6;
-    color: #1f2937;
+    background-color: var(--color-surface-alt);
+    color: var(--text-primary);
+    filter: brightness(1.2);
 }
 
 .user-dropdown-menu .dropdown-item.text-danger {
-    color: #dc3545;
+    color: var(--color-error);
 }
 
 .user-dropdown-menu .dropdown-item.text-danger:hover {
-    background-color: #fee2e2;
-    color: #991b1b;
+    background-color: rgba(229, 57, 53, 0.1);
+    color: var(--color-error);
 }
 
 .user-dropdown-menu .dropdown-header {
     padding: 12px 16px;
+    color: var(--text-primary);
 }
 
 .user-dropdown-menu .dropdown-divider {
     margin: 8px 0;
-    border-color: #e5e7eb;
+    border-color: var(--divider-color);
 }
 
 .content-area {
@@ -187,11 +281,12 @@ body {
 }
 
 .stat-card {
-    background: white;
+    background: var(--color-surface);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     height: 100%;
+    border: 1px solid var(--border-color);
 }
 
 .stat-header {
@@ -212,43 +307,44 @@ body {
 }
 
 .stat-icon.purple {
-    background: #f3f4f6;
-    color: #8b5cf6;
+    background: rgba(156, 77, 204, 0.2);
+    color: var(--color-secondary);
 }
 
 .stat-icon.orange {
-    background: #fef3c7;
-    color: #f59e0b;
+    background: rgba(244, 180, 0, 0.2);
+    color: var(--color-accent);
 }
 
 .stat-value {
     font-size: 2rem;
     font-weight: bold;
-    color: #1f2937;
+    color: var(--text-primary);
     margin-bottom: 5px;
 }
 
 .stat-label {
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 0.875rem;
 }
 
 .stat-change {
-    color: #10b981;
+    color: var(--color-success);
     font-size: 0.875rem;
     font-weight: 600;
 }
 
 .stat-change.negative {
-    color: #ef4444;
+    color: var(--color-error);
 }
 
 .chart-card {
-    background: white;
+    background: var(--color-surface);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px var(--shadow-color);
     margin-top: 20px;
+    border: 1px solid var(--border-color);
 }
 
 .card-header-custom {
@@ -261,12 +357,12 @@ body {
 .card-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-primary);
 }
 
 .time-filter {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--text-secondary);
 }
 
 .progress-section {
@@ -285,13 +381,19 @@ body {
 }
 
 .btn-view-details {
-    background: #6366f1;
-    color: white;
+    background: var(--color-primary);
+    color: var(--text-primary);
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
     font-weight: 600;
     margin-top: 15px;
+    transition: all 0.3s;
+}
+
+.btn-view-details:hover {
+    filter: brightness(1.2);
+    color: var(--text-primary);
 }
 
 .gauge-container {
@@ -303,4 +405,102 @@ body {
 
 canvas {
     max-height: 300px;
+}
+
+/* Estilos para página de login */
+.login-container {
+    background: var(--color-background);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+.login-card {
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.login-card .form-label {
+    color: var(--text-primary);
+}
+
+.login-card .form-control {
+    background: var(--color-surface-alt);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.login-card .form-control:focus {
+    background: var(--color-surface-alt);
+    border-color: var(--color-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 183, 179, 0.25);
+}
+
+.login-card .form-check-label {
+    color: var(--text-secondary);
+}
+
+.login-card .btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--text-primary);
+}
+
+.login-card .btn-primary:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    filter: brightness(1.2);
+    color: var(--text-primary);
+}
+
+.login-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.login-card .text-muted:hover {
+    color: var(--color-primary) !important;
+}
+
+.login-hero-title {
+    color: var(--text-primary) !important;
+}
+
+.login-hero-text {
+    color: var(--text-secondary) !important;
+}
+
+.login-form-title {
+    color: var(--text-primary) !important;
+}
+
+/* Estilos para página de perfil */
+.stat-card h4,
+.stat-card h5 {
+    color: var(--text-primary);
+}
+
+.stat-card .form-label {
+    color: var(--text-primary);
+}
+
+.stat-card p {
+    color: var(--text-secondary);
+}
+
+.stat-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.stat-card .btn-primary {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--text-primary);
+}
+
+.stat-card .btn-primary:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    filter: brightness(1.2);
+    color: var(--text-primary);
 }

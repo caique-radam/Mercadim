@@ -5,6 +5,7 @@ from src.auth import auth_bp
 from src.profile import profile_bp
 from config import Config
 from src.supabase import init_supabase
+from src.interface import get_interface_context
 import os
 from flask import render_template
 
@@ -25,6 +26,12 @@ init_supabase(app)
 # Registra as rotas do app
 app.register_blueprint(auth_bp)
 app.register_blueprint(profile_bp)
+
+# Context Processor - Injeta contexto da interface em todos os templates
+@app.context_processor
+def inject_interface_context():
+    """Injeta variáveis de contexto da interface em todos os templates"""
+    return get_interface_context()
 
 @app.route('/')
 def index():
