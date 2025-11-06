@@ -4,9 +4,9 @@ Módulo de Autenticação
 DECISÃO: Exportar todos os componentes principais do módulo
 Isso facilita imports e uso em outras partes da aplicação
 """
-from .routes import auth_bp
-from .decorators import login_required, admin_required, guest_only, role_required
-from .service import (
+from .auth_routes import auth_bp
+from .auth_decorators import login_required, admin_required, guest_only, role_required
+from .auth_service import (
     login,
     get_user,
     sign_out,

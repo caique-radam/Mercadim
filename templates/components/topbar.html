@@ -10,13 +10,13 @@
             <div class="user-profile" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
                 {% set user_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
                 {% set avatar_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
-                <img src="https://ui-avatars.com/api/?name={{ avatar_name|urlencode }}&background=6366f1&color=fff"
+                <img src="https://ui-avatars.com/api/?name={{ avatar_name|urlencode }}&background=00b7b3&color=fff"
                      alt="User" class="user-avatar">
                 <div>
-                    <div style="font-weight: 600; font-size: 0.9rem;">
+                    <div class="user-name">
                         {{ user_name }}
                     </div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">
+                    <div class="user-role">
                         {% if user.profile and user.profile.role %}
                             {{ user.profile.role|title }}
                         {% else %}
@@ -24,15 +24,15 @@
                         {% endif %}
                     </div>
                 </div>
-                <i class="bi bi-chevron-down ms-2" style="font-size: 0.75rem; color: #6b7280;"></i>
+                <i class="bi bi-chevron-down ms-2 user-chevron"></i>
             </div>
             
             <!-- Menu Dropdown -->
             <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu" aria-labelledby="userProfileDropdown">
                 <li>
                     <div class="dropdown-header px-3 py-2">
-                        <div style="font-weight: 600; font-size: 0.9rem; color: #1f2937;">{{ user_name }}</div>
-                        <div style="font-size: 0.75rem; color: #6b7280;">{{ user.email }}</div>
+                        <div class="user-name-header">{{ user_name }}</div>
+                        <div class="user-email">{{ user.email }}</div>
                     </div>
                 </li>
                 <li><hr class="dropdown-divider"></li>

@@ -6,7 +6,7 @@ Isso evita duplicação de código e garante consistência
 """
 from functools import wraps
 from flask import session, redirect, url_for, flash, request
-from .service import get_user
+from .auth_service import get_user
 
 
 def login_required(f):

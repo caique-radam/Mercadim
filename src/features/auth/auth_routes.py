@@ -5,18 +5,19 @@ DECISÃO: Centralizar todas as rotas de autenticação em um blueprint
 Isso facilita organização e manutenção do código
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
-from .decorators import guest_only
-from .service import (
+from .auth_decorators import guest_only
+from .auth_service import (
     login as auth_login,
     sign_out as auth_sign_out,
     reset_password_email,
     update_password,
     refresh_session
 )
-from src.utils.funcs import is_valid_email, is_strong_password
-from src.profile.service import get_logged_profile
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+from src.common.utils import is_valid_email, is_strong_password
+from src.features.profile.profile_service import get_logged_profile
 
+
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.route('/login', methods=['GET', 'POST'], endpoint='login')
 @guest_only

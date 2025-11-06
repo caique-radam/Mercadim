@@ -9,7 +9,7 @@ DECISÃO: Criar uma camada de serviço para:
 4. Garantir consistência em todas as operações de auth
 """
 from typing import Dict, Optional, Any
-from src.supabase import supabase_client
+from src.core.database import supabase_client
 
 
 def login(email: str, password: str) -> Dict[str, Any]:

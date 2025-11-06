@@ -1,4 +1,4 @@
-from src.supabase import supabase_client
+from src.core.database import supabase_client
 
 def list_users():
     try:

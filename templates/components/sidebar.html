@@ -1,32 +1,39 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="brand">
-        <i class="bi bi-shop"></i> Mercadim Admin
+        <div class="brand-logo">
+            <img src="{{ url_for('static', filename='img/logo_mercadim.png') }}" alt="Mercadim" class="logo">
+        </div>
     </div>
 
+    <!-- Menu Principal -->
     <ul class="sidebar-menu">
-        <li><a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-        <li><a href="#"><i class="bi bi-graph-up"></i> Analytics</a></li>
-        <li><a href="#"><i class="bi bi-cart3"></i> Vendas</a></li>
+        {% for item in sidebar_main_menu %}
+            <li>
+                <a href="{{ item['url'] }}" {% if item.get('active') %}class="active"{% endif %}>
+                    <i class="bi {{ item['icon'] }}"></i> {{ item['text'] }}
+                </a>
+            </li>
+        {% endfor %}
     </ul>
-
-    <div class="menu-section">APPS</div>
-    <ul class="sidebar-menu">
-        <li><a href="#"><i class="bi bi-envelope"></i> Email</a></li>
-        <li><a href="#"><i class="bi bi-chat-dots"></i> Chat</a></li>
-        <li><a href="#"><i class="bi bi-check2-square"></i> Tarefas</a></li>
-        <li><a href="#"><i class="bi bi-calendar3"></i> Calendário</a></li>
-        <li><a href="#"><i class="bi bi-cart4"></i> Produtos</a></li>
-        <li><a href="#"><i class="bi bi-people"></i> Usuários <i class="bi bi-chevron-right ms-auto"></i></a></li>
-    </ul>
-
-    <div class="menu-section">ELEMENTOS</div>
-    <ul class="sidebar-menu">
-        <li><a href="#"><i class="bi bi-list-ul"></i> Lista de Dados <span class="badge-new">NOVO</span></a></li>
-        <li><a href="#"><i class="bi bi-file-text"></i> Conteúdo <i class="bi bi-chevron-right ms-auto"></i></a></li>
-        <li><a href="#"><i class="bi bi-palette"></i> Cores</a></li>
-        <li><a href="#"><i class="bi bi-emoji-smile"></i> Ícones <i class="bi bi-chevron-right ms-auto"></i></a></li>
-        <li><a href="#"><i class="bi bi-credit-card"></i> Cards <i class="bi bi-chevron-right ms-auto"></i></a></li>
-        <li><a href="#"><i class="bi bi-grid-3x3"></i> Componentes <i class="bi bi-chevron-right ms-auto"></i></a></li>
-    </ul>
+    
+    <!-- Seções do Menu -->
+    {% for section in sidebar_menu_sections %}
+        <div class="menu-section">{{ section['name'] }}</div>
+        <ul class="sidebar-menu">
+            {% for item in section['items'] %}
+                <li>
+                    <a href="{{ item['url'] }}" {% if item.get('active') %}class="active"{% endif %}>
+                        <i class="bi {{ item['icon'] }}"></i> {{ item['text'] }}
+                        {% if item.get('badge') %}
+                            <span class="badge-new">{{ item['badge'] }}</span>
+                        {% endif %}
+                        {% if item.get('has_submenu') %}
+                            <i class="bi bi-chevron-right ms-auto"></i>
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
 </div>

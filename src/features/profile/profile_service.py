@@ -6,7 +6,7 @@ DECISÃO: Separar lógica de profile em serviço próprio
 Isso facilita manutenção e reutilização
 """
 from typing import Dict, Any, Optional
-from src.supabase import supabase_client
+from src.core.database import supabase_client
 
 
 def get_user_profile(user_id: str) -> Dict[str, Any]:
