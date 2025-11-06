@@ -1,10 +1,12 @@
 from flask import Flask
 from flask_session import Session
 
-from src.modules.auth import auth_bp
+from src.auth import auth_bp
+from src.profile import profile_bp
 from config import Config
 from src.supabase import init_supabase
 import os
+from flask import render_template
 
 app = Flask(
     __name__,
@@ -22,6 +24,7 @@ init_supabase(app)
 
 # Registra as rotas do app
 app.register_blueprint(auth_bp)
+app.register_blueprint(profile_bp)
 
 @app.route('/')
 def index():
@@ -29,7 +32,7 @@ def index():
     from flask import session
     from flask import redirect, url_for
     if 'user' in session:
-        return "Dashboard", 200
+        return render_template('dashboard.html', user=session['user']), 200
     return redirect(url_for('auth.login'))
 
 # Tratamento de erros
