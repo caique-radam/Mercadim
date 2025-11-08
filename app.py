@@ -3,6 +3,7 @@ from flask_session import Session
 
 from src.features.auth import auth_bp
 from src.features.profile import profile_bp
+from src.features.user import user_bp
 from config import Config
 from src.core import init_supabase
 from src.common.interface import get_interface_context
@@ -26,6 +27,7 @@ init_supabase(app)
 # Registra as rotas do app
 app.register_blueprint(auth_bp)
 app.register_blueprint(profile_bp)
+app.register_blueprint(user_bp)
 
 # Context Processor - Injeta contexto da interface em todos os templates
 @app.context_processor

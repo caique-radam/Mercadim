@@ -2,6 +2,7 @@
 Gerencia itens e seções do menu lateral
 """
 from typing import List, Dict, Optional
+from flask import url_for
 
 
 def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
@@ -56,7 +57,7 @@ def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
                 {
                     'icon': 'bi-people',
                     'text': 'Usuários',
-                    'url': '#',
+                    'url': url_for('user.user_view'),
                     'has_submenu': False,
                     'active': False
                 }
