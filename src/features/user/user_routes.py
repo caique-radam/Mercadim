@@ -10,12 +10,163 @@ from src.features.user.user_service import (
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
+
+def get_form_fields(user_data=None, is_edit=False):
+    """
+    Retorna os campos do formulário de usuário.
+    Se user_data for fornecido, preenche os valores (modo edição).
+    """
+    fields = [
+        {
+            'name': 'first_name',
+            'id': 'first_name',
+            'type': 'text',
+            'label': 'Primeiro Nome',
+            'placeholder': 'Digite o primeiro nome',
+            'required': True,
+            'cols': 6
+        },
+        {
+            'name': 'last_name',
+            'id': 'last_name',
+            'type': 'text',
+            'label': 'Último Nome',
+            'placeholder': 'Digite o último nome',
+            'required': True,
+            'cols': 6
+        },
+        {
+            'name': 'email',
+            'id': 'email',
+            'type': 'email',
+            'label': 'E-mail',
+            'placeholder': 'usuario@example.com',
+            'required': True,
+            'cols': 6,
+            'readonly': is_edit  # Email não é editável na edição
+        },
+        {
+            'name': 'phone',
+            'id': 'phone',
+            'type': 'tel',
+            'label': 'Telefone',
+            'placeholder': '(00) 00000-0000',
+            'required': False,
+            'cols': 6
+        },
+        {
+            'name': 'password',
+            'id': 'password',
+            'type': 'password',
+            'label': 'Senha',
+            'placeholder': 'Digite a senha',
+            'required': not is_edit,  # Obrigatório apenas na criação
+            'cols': 6
+        },
+        {
+            'name': 'confirm_password',
+            'id': 'confirm_password',
+            'type': 'password',
+            'label': 'Confirmar Senha',
+            'placeholder': 'Confirme a senha',
+            'required': not is_edit,  # Obrigatório apenas na criação
+            'cols': 6
+        }
+    ]
+    
+    # Se estiver editando, preenche os valores
+    if user_data:
+        for field in fields:
+            field_name = field['name']
+            if field_name in ['password', 'confirm_password']:
+                # Campos de senha não são preenchidos na edição
+                continue
+            else:
+                # Campos de texto: trata None como string vazia
+                value = user_data.get(field_name)
+                field['value'] = str(value) if value is not None else ''
+    
+    return fields
+
+
+def collect_form_data(is_edit=False):
+    """Coleta e limpa os dados do formulário"""
+    data = {
+        'first_name': request.form.get('first_name', '').strip(),
+        'last_name': request.form.get('last_name', '').strip(),
+        'phone': request.form.get('phone', '').strip() or None
+    }
+    
+    # Email apenas na criação
+    if not is_edit:
+        data['email'] = request.form.get('email', '').strip()
+    
+    # Senhas
+    password = request.form.get('password', '').strip()
+    confirm_password = request.form.get('confirm_password', '').strip()
+    
+    # Só inclui senhas se foram fornecidas
+    if password or confirm_password:
+        data['password'] = password
+        data['confirm_password'] = confirm_password
+    
+    return data
+
+
+def validate_user_data(user_data, is_edit=False):
+    """
+    Valida os dados do usuário.
+    Retorna (is_valid, error_message)
+    """
+    # Validações obrigatórias
+    if not user_data.get('first_name'):
+        return False, 'Primeiro nome é obrigatório'
+    
+    if not user_data.get('last_name'):
+        return False, 'Último nome é obrigatório'
+    
+    # Email obrigatório apenas na criação
+    if not is_edit and not user_data.get('email'):
+        return False, 'E-mail é obrigatório'
+    
+    # Validação de senha
+    password = user_data.get('password', '')
+    confirm_password = user_data.get('confirm_password', '')
+    
+    if not is_edit:
+        # Na criação, senha é obrigatória
+        if not password:
+            return False, 'Senha é obrigatória'
+        if password != confirm_password:
+            return False, 'As senhas não correspondem'
+    else:
+        # Na edição, senha é opcional, mas se fornecida, deve corresponder
+        if password or confirm_password:
+            if password != confirm_password:
+                return False, 'As senhas não correspondem'
+            # Remove senhas vazias
+            if not password:
+                user_data.pop('password', None)
+                user_data.pop('confirm_password', None)
+        else:
+            # Remove senhas se não foram fornecidas
+            user_data.pop('password', None)
+            user_data.pop('confirm_password', None)
+    
+    return True, None
+
+
 @user_bp.route('/')
 @login_required
 def user_view():
+    """Rota para listar todos os usuários"""
     logged_user = session.get('user', {})
 
     users_data = list_users()
+
+    if not users_data['success']:
+        flash(f'Erro ao carregar usuários: {users_data.get("error", "Erro desconhecido")}', 'error')
+        users_data['data'] = []
 
     headers = ["Primeiro Nome", "Último Nome", "Email", "Role", "Telefone"]
     rows = users_data['data']
@@ -31,6 +182,7 @@ def user_view():
         user=logged_user
     )
 
+
 @user_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_user():
@@ -38,32 +190,12 @@ def create_user():
     logged_user = session.get('user', {})
     
     if request.method == 'POST':
-        # Coleta os dados do formulário
-        user_data = {
-            'first_name': request.form.get('first_name', '').strip(),
-            'last_name': request.form.get('last_name', '').strip(),
-            'email': request.form.get('email', '').strip(),
-            'phone': request.form.get('phone', '').strip() or None,
-            'password': request.form.get('password', '').strip(),
-            'confirm_password': request.form.get('confirm_password', '').strip(),
-            'role': request.form.get('role', 'authenticated').strip()  # Valor padrão
-        }
+        user_data = collect_form_data(is_edit=False)
         
-        # Validação básica
-        if not user_data['first_name']:
-            flash('Primeiro nome é obrigatório', 'error')
-            return redirect(url_for('user.create_user'))
-        if not user_data['last_name']:
-            flash('Último nome é obrigatório', 'error')
-            return redirect(url_for('user.create_user'))
-        if not user_data['email']:
-            flash('E-mail é obrigatório', 'error')
-            return redirect(url_for('user.create_user'))
-        if not user_data['password']:
-            flash('Senha é obrigatória', 'error')
-            return redirect(url_for('user.create_user'))
-        if user_data['password'] != user_data['confirm_password']:
-            flash('As senhas não correspondem', 'error')
+        # Validação
+        is_valid, error_message = validate_user_data(user_data, is_edit=False)
+        if not is_valid:
+            flash(error_message, 'error')
             return redirect(url_for('user.create_user'))
         
         # Chama o serviço para criar o usuário
@@ -76,75 +208,8 @@ def create_user():
             flash(f'Erro ao criar usuário: {result.get("error", "Erro desconhecido")}', 'error')
             return redirect(url_for('user.create_user'))
     
-    # Campos do formulário baseados nas colunas da listagem
-    fields = [
-        {
-            'name': 'first_name',
-            'id': 'first_name',
-            'type': 'text',
-            'label': 'Primeiro Nome',
-            'placeholder': 'Digite o primeiro nome',
-            'required': True,
-            'cols': 6
-        },
-        {
-            'name': 'last_name',
-            'id': 'last_name',
-            'type': 'text',
-            'label': 'Último Nome',
-            'placeholder': 'Digite o último nome',
-            'required': True,
-            'cols': 6
-        },
-        {
-            'name': 'email',
-            'id': 'email',
-            'type': 'email',
-            'label': 'E-mail',
-            'placeholder': 'usuario@example.com',
-            'required': True,
-            'cols': 6
-        },
-        {
-            'name': 'phone',
-            'id': 'phone',
-            'type': 'tel',
-            'label': 'Telefone',
-            'placeholder': '(00) 00000-0000',
-            'required': False,
-            'cols': 6
-        },
-        {
-            'name': 'password',
-            'id': 'password',
-            'type': 'password',
-            'label': 'Senha',
-            'placeholder': 'Digite a senha',
-            'required': True,
-            'cols': 6
-        },
-        {
-            'name': 'confirm_password',
-            'id': 'confirm_password',
-            'type': 'password',
-            'label': 'Confirmar Senha',
-            'placeholder': 'Confirme a senha',
-            'required': True,
-            'cols': 6
-        }
-        # {
-        #     'name': 'role',
-        #     'id': 'role',
-        #     'type': 'select',
-        #     'label': 'Perfil',
-        #     'required': True,
-        #     'cols': 12,
-        #     'options': [
-        #         {'value': 'authenticated', 'label': 'Autenticado'},
-        #     ],
-        #     'empty_option': 'Selecione o perfil'
-        # }
-    ]
+    # GET: mostra formulário vazio
+    fields = get_form_fields(is_edit=False)
     
     return render_template(
         'user/form_user.html',
@@ -158,6 +223,7 @@ def create_user():
         user=logged_user
     )
 
+
 @user_bp.route('/edit/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(id):
@@ -165,19 +231,12 @@ def edit_user(id):
     logged_user = session.get('user', {})
     
     if request.method == 'POST':
-        # Coleta os dados do formulário
-        user_data = {
-            'first_name': request.form.get('first_name', '').strip(),
-            'last_name': request.form.get('last_name', '').strip(),
-            'phone': request.form.get('phone', '').strip() or None
-        }
+        user_data = collect_form_data(is_edit=True)
         
-        # Validação básica
-        if not user_data['first_name']:
-            flash('Primeiro nome é obrigatório', 'error')
-            return redirect(url_for('user.edit_user', id=id))
-        if not user_data['last_name']:
-            flash('Último nome é obrigatório', 'error')
+        # Validação
+        is_valid, error_message = validate_user_data(user_data, is_edit=True)
+        if not is_valid:
+            flash(error_message, 'error')
             return redirect(url_for('user.edit_user', id=id))
         
         # Chama o serviço para atualizar o usuário
@@ -190,7 +249,7 @@ def edit_user(id):
             flash(f'Erro ao atualizar usuário: {result.get("error", "Erro desconhecido")}', 'error')
             return redirect(url_for('user.edit_user', id=id))
     
-    # Busca os dados do usuário no banco de dados
+    # GET: busca dados e mostra formulário preenchido
     result = get_user_by_id(id)
     
     if not result['success']:
@@ -198,69 +257,7 @@ def edit_user(id):
         return redirect(url_for('user.user_view'))
     
     user_data = result['data']
-    
-    # Campos do formulário baseados nas colunas da listagem (igual ao create_user)
-    fields = [
-        {
-            'name': 'first_name',
-            'id': 'first_name',
-            'type': 'text',
-            'label': 'Primeiro Nome',
-            'placeholder': 'Digite o primeiro nome',
-            'required': True,
-            'cols': 6,
-            'value': user_data.get('first_name', '')
-        },
-        {
-            'name': 'last_name',
-            'id': 'last_name',
-            'type': 'text',
-            'label': 'Último Nome',
-            'placeholder': 'Digite o último nome',
-            'required': True,
-            'cols': 6,
-            'value': user_data.get('last_name', '')
-        },
-        {
-            'name': 'email',
-            'id': 'email',
-            'type': 'email',
-            'label': 'E-mail',
-            'placeholder': 'usuario@example.com',
-            'required': True,
-            'cols': 6,
-            'value': user_data.get('email', ''),
-            'readonly': True  # Email geralmente não é editável
-        },
-        {
-            'name': 'phone',
-            'id': 'phone',
-            'type': 'tel',
-            'label': 'Telefone',
-            'placeholder': '(00) 00000-0000',
-            'required': False,
-            'cols': 6,
-            'value': user_data.get('phone', '')
-        },
-        {
-            'name': 'password',
-            'id': 'password',
-            'type': 'password',
-            'label': 'Senha',
-            'placeholder': 'Digite a senha',
-            'required': False,
-            'cols': 6
-        },
-        {
-            'name': 'confirm_password',
-            'id': 'confirm_password',
-            'type': 'password',
-            'label': 'Confirmar Senha',
-            'placeholder': 'Confirme a senha',
-            'required': False,
-            'cols': 6
-        },
-    ]
+    fields = get_form_fields(user_data=user_data, is_edit=True)
     
     return render_template(
         'user/form_user.html',
@@ -275,11 +272,11 @@ def edit_user(id):
         user=logged_user
     )
 
+
 @user_bp.route('/delete/<string:id>', methods=['POST'])
 @login_required
 def delete_user(id):
     """Rota para deletar um usuário"""
-    # Chama o serviço para deletar o usuário
     result = delete_user_service(id)
     
     if result['success']:
