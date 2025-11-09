@@ -1,139 +1,133 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for, flash, jsonify
 from src.features.auth.auth_decorators import login_required
+from src.features.venda.venda_service import list_produtos_disponiveis, salvar_venda, list_vendas, get_venda_by_id
+import json
 
 venda_bp = Blueprint('venda', __name__, url_prefix='/venda')
 
 @venda_bp.route('/')
 @login_required
 def venda_view():
-    # Dados mockados para testar a aparência
-    produtos = [
-        {'id': 1, 'codigo': 'PROD001', 'nome': 'Arroz 5kg', 'preco': 24.90},
-        {'id': 2, 'codigo': 'PROD002', 'nome': 'Feijão 1kg', 'preco': 8.50},
-        {'id': 3, 'codigo': 'PROD003', 'nome': 'Açúcar 1kg', 'preco': 5.90},
-        {'id': 4, 'codigo': 'PROD004', 'nome': 'Óleo de Soja 900ml', 'preco': 7.80},
-        {'id': 5, 'codigo': 'PROD005', 'nome': 'Macarrão 500g', 'preco': 4.20},
-        {'id': 6, 'codigo': 'PROD006', 'nome': 'Leite Integral 1L', 'preco': 5.50},
-        {'id': 7, 'codigo': 'PROD007', 'nome': 'Café 500g', 'preco': 12.90},
-        {'id': 8, 'codigo': 'PROD008', 'nome': 'Sabão em Pó 1kg', 'preco': 15.80},
-        {'id': 9, 'codigo': 'PROD009', 'nome': 'Detergente 500ml', 'preco': 2.90},
-        {'id': 10, 'codigo': 'PROD010', 'nome': 'Papel Higiênico 4un', 'preco': 18.50},
-    ]
+    """
+    Página principal de vendas
+    O carrinho é gerenciado no cliente via JavaScript
+    """
+    produtos_data = list_produtos_disponiveis()
     
-    # Carrinho mockado
-    carrinho = [
-        {
-            'id': 1,
-            'produto': {'nome': 'Arroz 5kg', 'codigo': 'PROD001', 'preco': 24.90},
-            'quantidade': 2
-        },
-        {
-            'id': 2,
-            'produto': {'nome': 'Feijão 1kg', 'codigo': 'PROD002', 'preco': 8.50},
-            'quantidade': 3
-        },
-        {
-            'id': 3,
-            'produto': {'nome': 'Açúcar 1kg', 'codigo': 'PROD003', 'preco': 5.90},
-            'quantidade': 1
-        },
-    ]
-    
-    # Calcular total
-    total = sum(item['produto']['preco'] * item['quantidade'] for item in carrinho)
-    
-    return render_template('venda/venda_view.html', 
-                         produtos=produtos, 
-                         carrinho=carrinho, 
-                         total=total)
-
-
-# Rotas mockadas para testar a aparência (apenas redirecionam de volta)
-@venda_bp.route('/adicionar', methods=['POST'])
-@login_required
-def adicionar_item():
-    """Rota mockada - retorna JSON se for AJAX, senão redireciona"""
-    # Verifica se é uma requisição AJAX
-    is_ajax = request.is_json or request.content_type == 'application/json'
-    
-    if is_ajax:
-        data = request.get_json()
-        produto_id = data.get('produto_id')
-        quantidade = data.get('quantidade', 1)
-        
-        # Aqui você implementaria a lógica real de adicionar ao carrinho
-        # Por enquanto, apenas retorna sucesso
-        return jsonify({
-            'success': True,
-            'message': 'Item adicionado com sucesso'
-        })
+    # Verifica se a busca foi bem-sucedida
+    if produtos_data.get('success'):
+        produtos = produtos_data.get('data', [])
     else:
-        flash('Item adicionado (mock)', 'info')
-        return redirect(url_for('venda.venda_view'))
-
-
-@venda_bp.route('/diminuir/<int:item_id>', methods=['POST'])
-@login_required
-def diminuir_item(item_id):
-    """Rota mockada - retorna JSON se for AJAX, senão redireciona"""
-    is_ajax = request.is_json or request.content_type == 'application/json'
+        produtos = []
+        error_message = produtos_data.get('error', 'Erro ao carregar produtos')
+        flash(f'Erro ao carregar produtos: {error_message}', 'error')
     
-    if is_ajax:
-        # Aqui você implementaria a lógica real de diminuir quantidade
-        return jsonify({
-            'success': True,
-            'message': 'Quantidade diminuída com sucesso'
-        })
-    else:
-        flash('Quantidade diminuída (mock)', 'info')
-        return redirect(url_for('venda.venda_view'))
-
-
-@venda_bp.route('/aumentar/<int:item_id>', methods=['POST'])
-@login_required
-def aumentar_item(item_id):
-    """Rota mockada - retorna JSON se for AJAX, senão redireciona"""
-    is_ajax = request.is_json or request.content_type == 'application/json'
-    
-    if is_ajax:
-        # Aqui você implementaria a lógica real de aumentar quantidade
-        return jsonify({
-            'success': True,
-            'message': 'Quantidade aumentada com sucesso'
-        })
-    else:
-        flash('Quantidade aumentada (mock)', 'info')
-        return redirect(url_for('venda.venda_view'))
-
-
-@venda_bp.route('/remover/<int:item_id>', methods=['POST'])
-@login_required
-def remover_item(item_id):
-    """Rota mockada - retorna JSON se for AJAX, senão redireciona"""
-    is_ajax = request.is_json or request.content_type == 'application/json'
-    
-    if is_ajax:
-        # Aqui você implementaria a lógica real de remover item
-        return jsonify({
-            'success': True,
-            'message': 'Item removido com sucesso'
-        })
-    else:
-        flash('Item removido (mock)', 'info')
-        return redirect(url_for('venda.venda_view'))
+    return render_template('venda/venda_view.html', produtos=produtos)
 
 
 @venda_bp.route('/finalizar', methods=['POST'])
 @login_required
 def finalizar():
-    """Rota mockada - apenas redireciona de volta para testar aparência"""
-    flash('Venda finalizada (mock)', 'success')
-    return redirect(url_for('venda.venda_view'))
+    """
+    Finaliza a venda
+    Recebe os dados do carrinho via formulário
+    """
+    try:
+        # Recebe dados do formulário
+        carrinho_json = request.form.get('carrinho_json')
+        forma_pagamento = request.form.get('pagamento')
+        
+        if not carrinho_json:
+            flash('Nenhum item no carrinho', 'error')
+            return redirect(url_for('venda.venda_view'))
+        
+        if not forma_pagamento:
+            flash('Selecione uma forma de pagamento', 'error')
+            return redirect(url_for('venda.venda_view'))
+        
+        # Parse do carrinho
+        carrinho = json.loads(carrinho_json)
+        
+        if not carrinho or len(carrinho) == 0:
+            flash('Carrinho vazio', 'error')
+            return redirect(url_for('venda.venda_view'))
+        
+        # Obtém o ID do usuário da sessão
+        user = session.get('user', {})
+        user_id = user.get('id')
+        
+        if not user_id:
+            flash('Usuário não autenticado', 'error')
+            return redirect(url_for('venda.venda_view'))
+        
+        # Salva a venda
+        response = salvar_venda(carrinho, forma_pagamento, user_id)
+        
+        if response.get('success'):
+            flash('Venda finalizada com sucesso!', 'success')
+            return redirect(url_for('venda.venda_view'))
+        else:
+            flash(response.get('error', 'Erro ao finalizar venda'), 'error')
+            return redirect(url_for('venda.venda_view'))
+            
+    except json.JSONDecodeError:
+        flash('Erro ao processar carrinho', 'error')
+        return redirect(url_for('venda.venda_view'))
+    except Exception as e:
+        flash(f'Erro ao finalizar venda: {str(e)}', 'error')
+        return redirect(url_for('venda.venda_view'))
 
 
 @venda_bp.route('/cancelar')
 @login_required
 def cancelar():
-    """Rota mockada - apenas redireciona de volta para testar aparência"""
-    flash('Venda cancelada (mock)', 'warning')
+    """Cancela a venda atual"""
+    flash('Venda cancelada', 'warning')
     return redirect(url_for('venda.venda_view'))
+
+
+@venda_bp.route('/list')
+@login_required
+def list_vendas_view():
+    """Rota para listar todas as vendas"""
+    logged_user = session.get('user', {})
+
+    vendas_data = list_vendas()
+
+    if not vendas_data['success']:
+        flash(f'Erro ao carregar vendas: {vendas_data.get("error", "Erro desconhecido")}', 'error')
+        vendas_data['data'] = []
+
+    headers = ["Data/Hora", "Valor Total", "Método de Pagamento"]
+    rows = vendas_data['data']
+    
+    return render_template(
+        'venda/list_vendas.html',
+        title="Histórico de Vendas",
+        headers=headers,
+        rows=rows,
+        view_url='venda.view_venda',
+        user=logged_user
+    )
+
+
+@venda_bp.route('/view/<string:id>')
+@login_required
+def view_venda(id):
+    """Rota para visualizar os detalhes de uma venda"""
+    logged_user = session.get('user', {})
+    
+    result = get_venda_by_id(id)
+    
+    if not result['success']:
+        flash(f'Venda não encontrada: {result.get("error", "Erro desconhecido")}', 'error')
+        return redirect(url_for('venda.list_vendas_view'))
+    
+    venda_data = result['data']
+    
+    return render_template(
+        'venda/venda_detail.html',
+        title="Detalhes da Venda",
+        venda=venda_data,
+        user=logged_user
+    )

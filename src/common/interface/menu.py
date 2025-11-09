@@ -34,6 +34,18 @@ def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
             ]
         },
         {
+            'name': 'RELATÓRIOS',
+            'items': [
+                {
+                    'icon': 'bi-file-earmark-text',
+                    'text': 'Vendas',
+                    'url': url_for('venda.list_vendas_view'),
+                    'has_submenu': False,
+                    'active': False
+                }
+            ]
+        },
+        {
             'name': 'SISTEMA',
             'items': [
                 {
@@ -75,7 +87,7 @@ def get_menu_items(current_url: Optional[str] = None) -> List[Dict]:
             'icon': 'bi-basket2',
             'text': 'Vendas',
             'url': url_for('venda.venda_view'),
-            'active': False
+            'active': current_url == '/venda'
         }
     ]
     
