@@ -9,6 +9,10 @@ from src.features.produtos import produtos_bp
 from config import Config
 from src.core import init_supabase
 from src.common.interface import get_interface_context
+from src.common.template_utils import (
+    format_currency, format_number, format_date, format_quantity,
+    calcular_total_itens, get_produto_by_id
+)
 import os
 from flask import render_template
 from src.features.venda import venda_bp
@@ -34,11 +38,32 @@ app.register_blueprint(user_bp)
 app.register_blueprint(fornecedores_bp)
 app.register_blueprint(produtos_bp)
 app.register_blueprint(venda_bp)
-# Context Processor - Injeta contexto da interface em todos os templates
+
+# ============================================
+# REGISTRO DE FILTROS CUSTOMIZADOS
+# ============================================
+# Filtros podem ser usados nos templates com: {{ valor|format_currency }}
+app.jinja_env.filters['format_currency'] = format_currency
+app.jinja_env.filters['format_number'] = format_number
+app.jinja_env.filters['format_date'] = format_date
+app.jinja_env.filters['format_quantity'] = format_quantity
+
+# ============================================
+# CONTEXT PROCESSOR - Injeta contexto em todos os templates
+# ============================================
 @app.context_processor
 def inject_interface_context():
     """Injeta variáveis de contexto da interface em todos os templates"""
-    return get_interface_context()
+    context = get_interface_context()
+    
+    # Adiciona funções auxiliares ao contexto
+    # Essas funções podem ser chamadas diretamente nos templates
+    context.update({
+        'calcular_total_itens': calcular_total_itens,
+        'get_produto_by_id': get_produto_by_id,
+    })
+    
+    return context
 
 @app.route('/')
 def index():

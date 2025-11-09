@@ -65,9 +65,14 @@ def get_form_fields(produto_data=None, fornecedores=None):
         {
             'name': 'uni_medida',
             'id': 'uni_medida',
-            'type': 'text',
+            'type': 'select',
             'label': 'Unidade de Medida',
-            'placeholder': 'Ex: kg, un, litros',
+            'options': [
+                {'value': '', 'label': 'Selecione'},
+                {'value': 'KG', 'label': 'Kg'},
+                {'value': 'Unidade', 'label': 'Unidade'},
+                {'value': 'L', 'label': 'Litros'}
+            ],
             'required': False,
             'cols': 6
         },

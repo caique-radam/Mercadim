@@ -982,6 +982,13 @@ canvas {
     border-color: var(--color-primary);
 }
 
+.carrinho-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 0 24px;
+}
+
 .venda-total-section {
     border-top: 1px solid var(--border-color);
     padding: 24px;
@@ -1011,4 +1018,58 @@ canvas {
     background: var(--color-surface);
     border-color: var(--border-color);
     color: var(--text-primary);
+}
+
+/* Estilos para mensagens flash do Flask */
+.flash-messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+    width: auto;
+    pointer-events: none;
+}
+
+.flash-messages-container .alert {
+    pointer-events: auto;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Ajuste para templates com sidebar - quando há main-content, ajusta a posição */
+body:has(.main-content) .flash-messages-container,
+body.has-main-content .flash-messages-container {
+    right: calc(20px + var(--sidebar-width, 250px));
+}
+
+/* Ajuste para telas menores */
+@media (max-width: 768px) {
+    .flash-messages-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    body:has(.main-content) .flash-messages-container,
+    body.has-main-content .flash-messages-container {
+        right: 10px;
+        left: calc(var(--sidebar-width, 250px) + 10px);
+        max-width: calc(100% - var(--sidebar-width, 250px) - 20px);
+    }
 }

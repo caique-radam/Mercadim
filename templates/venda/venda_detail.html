@@ -1,0 +1,90 @@
+{% extends 'dashboard.html' %}
+
+{% block title %}Detalhes da Venda - Mercadim{% endblock %}
+
+{% block content_area %}
+<div class="row">
+    <div class="col-12">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Detalhes da Venda</h4>
+                <a href="{{ url_for('venda.list_vendas_view') }}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Voltar
+                </a>
+            </div>
+            
+            <!-- Informações da Venda -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Data/Hora</label>
+                        <p class="mb-0">{{ venda.data_venda }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Método de Pagamento</label>
+                        <p class="mb-0">{{ venda.metodo_pagamento|capitalize }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Valor Total</label>
+                        <p class="mb-0" style="font-size: 1.25rem; font-weight: bold; color: var(--color-primary);">
+                            R$ {{ "%.2f"|format(venda.valor_venda)|replace('.', ',') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <!-- Itens da Venda -->
+            <h5 class="mb-3">Itens da Venda</h5>
+            <div class="table-responsive list-table-container">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Quantidade</th>
+                            <th scope="col">Preço Unitário</th>
+                            <th scope="col">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if venda.itens %}
+                            {% for item in venda.itens %}
+                                <tr>
+                                    <td>{{ item.produto_nome }}</td>
+                                    <td>{{ "%.2f"|format(item.quantidade)|replace('.', ',') }} {{ item.uni_medida }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.preco_unitario)|replace('.', ',') }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.subtotal)|replace('.', ',') }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    Nenhum item encontrado
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                            <td class="fw-bold" style="font-size: 1.1rem; color: var(--color-primary);">
+                                R$ {{ "%.2f"|format(venda.valor_venda)|replace('.', ',') }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

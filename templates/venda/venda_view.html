@@ -6,116 +6,75 @@
 <div class="row g-3 venda-container" style="height: 100%;">
     <!-- Seção de produtos -->
     <div class="col-lg-8">
-        <div class="stat-card" style="display: flex; flex-direction: column; height: 100%;">
+        <div class="stat-card">
             <div class="stat-header">
                 <h4 class="mb-0">
                     <i class="bi bi-box-seam me-2"></i>
                     Produtos
                 </h4>
             </div>
-            <div style="flex: 1; overflow-y: auto; min-height: 0;">
-                <div class="list-table-container">
-                    <table class="table table-hover align-middle" style="color: var(--text-primary);">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Produto</th>
-                                <th>Quantidade</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for produto in produtos %}
-                            <tr>
-                                <td>{{ produto.codigo }}</td>
-                                <td>{{ produto.nome }}</td>
-                                <td>
-                                    <input type="number" min="1" value="1" id="qtd_{{ produto.id }}" 
-                                           class="form-control form-control-sm" 
-                                           style="width: 80px; background: var(--color-surface-alt); border: 1px solid var(--border-color); color: var(--text-primary);">
-                                </td>
-                                <td>
-                                    <button type="button" 
-                                            class="btn btn-sm btn-primary btn-adicionar-item" 
-                                            data-produto-id="{{ produto.id }}">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        Adicionar
-                                    </button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center" style="color: var(--text-secondary);">Nenhum produto encontrado</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="list-table-container">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Quantidade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos %}
+                        <tr>
+                            <td>{% if produto.codigo_barra %}{{ produto.codigo_barra }}{% else %}-{% endif %}</td>
+                            <td>{{ produto.nome }}</td>
+                            <td>
+                                <input type="number" min="1" value="1" id="qtd_{{ produto.id }}" 
+                                       class="form-control form-control-sm" 
+                                       style="width: 80px;">
+                            </td>
+                            <td>
+                                <button type="button" 
+                                        class="btn btn-sm btn-primary btn-adicionar-item" 
+                                        data-produto-id="{{ produto.id }}">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Adicionar
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">Nenhum produto encontrado</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <!-- Seção do carrinho -->
     <div class="col-lg-4">
-        <div class="stat-card" style="display: flex; flex-direction: column; height: 100%;">
+        <div class="stat-card">
             <div class="stat-header">
                 <h4 class="mb-0">
                     <i class="bi bi-cart me-2"></i>
                     Itens da Venda
                 </h4>
             </div>
-            <div style="flex: 1; overflow-y: auto; min-height: 0; padding: 0 24px;">
-                {% if carrinho %}
-                    {% for item in carrinho %}
-                    <div class="d-flex justify-content-between align-items-center venda-item-card">
-                        <div>
-                            <strong style="color: var(--text-primary);">{{ item.produto.nome }}</strong><br>
-                            <small style="color: var(--text-secondary);">Cód: {{ item.produto.codigo }}</small><br>
-                            <small style="color: var(--text-secondary);">R$ {{ "%.2f"|format(item.produto.preco) }}</small>
-                        </div>
-                        <div class="text-end">
-                            <div class="btn-group btn-group-sm mb-2" role="group">
-                                <button type="button" 
-                                        class="btn btn-outline-danger btn-diminuir-item" 
-                                        data-item-id="{{ item.id }}"
-                                        style="border-color: var(--color-error); color: var(--color-error);">
-                                    <i class="bi bi-dash"></i>
-                                </button>
-                                <span class="px-2 item-quantidade" 
-                                      data-item-id="{{ item.id }}"
-                                      style="color: var(--text-primary); min-width: 30px; display: inline-block; text-align: center;">{{ item.quantidade }}</span>
-                                <button type="button" 
-                                        class="btn btn-outline-success btn-aumentar-item" 
-                                        data-item-id="{{ item.id }}"
-                                        style="border-color: var(--color-success); color: var(--color-success);">
-                                    <i class="bi bi-plus"></i>
-                                </button>
-                            </div>
-                            <button type="button" 
-                                    class="btn btn-outline-secondary btn-sm w-100 btn-remover-item" 
-                                    data-item-id="{{ item.id }}"
-                                    style="background: transparent; border-color: var(--border-color); color: var(--text-secondary);">
-                                <i class="bi bi-trash me-1"></i>
-                                Remover
-                            </button>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <p class="text-center mb-0" style="color: var(--text-secondary); padding: 20px;">Nenhum item adicionado</p>
-                {% endif %}
+            <div class="carrinho-container">
+                <p class="text-center mb-0 text-muted" style="padding: 20px;">Nenhum item adicionado</p>
             </div>
             <div class="venda-total-section">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 style="color: var(--text-primary); margin: 0;">Total:</h5>
-                    <h5 class="venda-total-value" style="margin: 0;">R$ {{ "%.2f"|format(total) }}</h5>
+                    <h5 class="mb-0">Total:</h5>
+                    <h5 class="venda-total-value mb-0">R$ 0,00</h5>
                 </div>
 
                 <form action="{{ url_for('venda.finalizar') }}" method="POST">
                     <div class="mb-3">
-                        <label for="pagamento" class="form-label" style="color: var(--text-primary); font-weight: 500;">Forma de Pagamento</label>
-                        <select class="form-select" id="pagamento" name="pagamento" required
-                                style="background: var(--color-surface-alt); border: 1px solid var(--border-color); color: var(--text-primary);">
+                        <label for="pagamento" class="form-label fw-bold">Forma de Pagamento</label>
+                        <select class="form-select" id="pagamento" name="pagamento" required>
                             <option value="">Selecione</option>
                             <option value="dinheiro">Dinheiro</option>
                             <option value="cartao">Cartão</option>
@@ -123,13 +82,11 @@
                         </select>
                     </div>
                     <div class="d-flex justify-content-between gap-2">
-                        <button type="submit" class="btn btn-primary flex-fill" 
-                                style="background: var(--color-primary); border-color: var(--color-primary); color: var(--text-primary);">
+                        <button type="submit" class="btn btn-primary flex-fill">
                             <i class="bi bi-check-circle me-2"></i>
                             Fechar Venda
                         </button>
-                        <a href="{{ url_for('venda.cancelar') }}" class="btn btn-danger" 
-                           style="background: var(--color-error); border-color: var(--color-error); color: var(--text-primary);">
+                        <a href="{{ url_for('venda.cancelar') }}" class="btn btn-danger">
                             <i class="bi bi-x-circle me-2"></i>
                             Cancelar
                         </a>
@@ -139,109 +96,143 @@
         </div>
     </div>
 </div>
-
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Função auxiliar para fazer requisições AJAX
-    async function fazerRequisicao(url, method = 'POST', data = null) {
-        try {
-            const options = {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'same-origin'
-            };
-
-            if (data) {
-                options.body = JSON.stringify(data);
-            }
-
-            const response = await fetch(url, options);
-            
-            if (response.redirected) {
-                // Se a resposta foi um redirect, recarrega a página
-                window.location.href = response.url;
-                return;
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                // Recarrega a página para atualizar o carrinho
-                window.location.reload();
-            } else {
-                alert(result.error || 'Erro ao processar a requisição');
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao processar a requisição. Tente novamente.');
+    document.addEventListener('DOMContentLoaded', () => {
+        let carrinho = []; // [{id, nome, preco_venda, quantidade}]
+    
+        const produtos = JSON.parse('{{ produtos|tojson|safe }}');
+        const carrinhoContainer = document.querySelector('.carrinho-container');
+        const totalElement = document.querySelector('.venda-total-value');
+    
+        // Função para recalcular total
+        function atualizarTotal() {
+            const total = carrinho.reduce((sum, item) => sum + (item.preco_venda * item.quantidade), 0);
+            totalElement.textContent = new Intl.NumberFormat('pt-BR', {
+                style: 'currency', currency: 'BRL'
+            }).format(total);
         }
-    }
-
-    // Adicionar item ao carrinho
-    document.querySelectorAll('.btn-adicionar-item').forEach(button => {
-        button.addEventListener('click', async function() {
-            const produtoId = this.getAttribute('data-produto-id');
-            const quantidadeInput = document.getElementById('qtd_' + produtoId);
-            const quantidade = quantidadeInput ? parseInt(quantidadeInput.value) : 1;
-
-            if (quantidade < 1) {
-                alert('A quantidade deve ser maior que zero');
+    
+        // Renderizar lista do carrinho na coluna direita
+        function renderCarrinho() {
+            carrinhoContainer.innerHTML = '';
+            if (carrinho.length === 0) {
+                carrinhoContainer.innerHTML = '<p class="text-center mb-0 text-muted" style="padding: 20px;">Nenhum item adicionado</p>';
+                atualizarTotal();
                 return;
             }
-
-            // Desabilita o botão durante a requisição
-            this.disabled = true;
-            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adicionando...';
-
-            await fazerRequisicao('{{ url_for("venda.adicionar_item") }}', 'POST', {
-                produto_id: produtoId,
-                quantidade: quantidade
+    
+            carrinho.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'd-flex justify-content-between align-items-center venda-item-card mb-3';
+                div.innerHTML = `
+                    <div>
+                        <strong>${item.nome}</strong><br>
+                        <small class="text-muted">Qtd: ${item.quantidade} ${item.uni_medida || ''}</small><br>
+                        <small class="text-muted">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.preco_venda)}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="btn-group btn-group-sm mb-2" role="group">
+                            <button type="button" class="btn btn-outline-danger" onclick="alterarQuantidade(${item.id}, -1)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <span class="px-2" style="min-width: 30px; display: inline-block; text-align: center;">${item.quantidade}</span>
+                            <button type="button" class="btn btn-outline-success" onclick="alterarQuantidade(${item.id}, 1)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm w-100" onclick="removerItem(${item.id})">
+                            <i class="bi bi-trash me-1"></i> Remover
+                        </button>
+                    </div>
+                `;
+                carrinhoContainer.appendChild(div);
             });
-
-            // Reabilita o botão (caso não tenha recarregado)
-            this.disabled = false;
-            this.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Adicionar';
+    
+            atualizarTotal();
+        }
+    
+        // Adicionar item
+        document.querySelectorAll('.btn-adicionar-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.dataset.produtoId);
+                const produto = produtos.find(p => p.id === id);
+                
+                if (!produto) {
+                    alert('Produto não encontrado');
+                    return;
+                }
+                
+                const qtdInput = document.getElementById(`qtd_${id}`);
+                const quantidade = parseFloat(qtdInput.value) || 1;
+    
+                if (quantidade <= 0) {
+                    alert('A quantidade deve ser maior que zero');
+                    return;
+                }
+    
+                const existente = carrinho.find(i => i.id === id);
+                if (existente) {
+                    existente.quantidade += quantidade;
+                } else {
+                    carrinho.push({ 
+                        id: produto.id, 
+                        nome: produto.nome, 
+                        preco_venda: produto.preco_venda, 
+                        quantidade: quantidade,
+                        uni_medida: produto.uni_medida || ''
+                    });
+                }
+    
+                renderCarrinho();
+            });
         });
-    });
-
-    // Aumentar quantidade do item
-    document.querySelectorAll('.btn-aumentar-item').forEach(button => {
-        button.addEventListener('click', async function() {
-            const itemId = this.getAttribute('data-item-id');
-            
-            this.disabled = true;
-            await fazerRequisicao('{{ url_for("venda.aumentar_item", item_id=0) }}'.replace('0', itemId));
-            this.disabled = false;
-        });
-    });
-
-    // Diminuir quantidade do item
-    document.querySelectorAll('.btn-diminuir-item').forEach(button => {
-        button.addEventListener('click', async function() {
-            const itemId = this.getAttribute('data-item-id');
-            
-            this.disabled = true;
-            await fazerRequisicao('{{ url_for("venda.diminuir_item", item_id=0) }}'.replace('0', itemId));
-            this.disabled = false;
-        });
-    });
-
-    // Remover item do carrinho
-    document.querySelectorAll('.btn-remover-item').forEach(button => {
-        button.addEventListener('click', async function() {
-            if (!confirm('Deseja realmente remover este item do carrinho?')) {
-                return;
+    
+        // Tornar funções globais (para onclick)
+        window.alterarQuantidade = (id, delta) => {
+            const item = carrinho.find(i => i.id === id);
+            if (!item) return;
+            item.quantidade += delta;
+            if (item.quantidade <= 0) {
+                if (confirm('Deseja remover este item do carrinho?')) {
+                    carrinho = carrinho.filter(i => i.id !== id);
+                } else {
+                    item.quantidade = 1;
+                }
             }
-
-            const itemId = this.getAttribute('data-item-id');
-            
-            this.disabled = true;
-            await fazerRequisicao('{{ url_for("venda.remover_item", item_id=0) }}'.replace('0', itemId));
-            this.disabled = false;
-        });
+            renderCarrinho();
+        };
+    
+        window.removerItem = (id) => {
+            if (confirm('Deseja realmente remover este item do carrinho?')) {
+                carrinho = carrinho.filter(i => i.id !== id);
+                renderCarrinho();
+            }
+        };
+    
+        // Antes de enviar o formulário final
+        const formFinalizar = document.querySelector('form[action*="finalizar"]');
+        if (formFinalizar) {
+            formFinalizar.addEventListener('submit', e => {
+                if (carrinho.length === 0) {
+                    e.preventDefault();
+                    alert('Adicione pelo menos um item ao carrinho');
+                    return;
+                }
+                
+                // Remove input hidden anterior se existir
+                const hiddenAnterior = formFinalizar.querySelector('input[name="carrinho_json"]');
+                if (hiddenAnterior) {
+                    hiddenAnterior.remove();
+                }
+                
+                const hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'carrinho_json';
+                hidden.value = JSON.stringify(carrinho);
+                formFinalizar.appendChild(hidden);
+            });
+        }
     });
-});
-</script>
+    </script>
+    
 {% endblock %}
