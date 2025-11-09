@@ -8,8 +8,13 @@
         <!-- Dropdown do Perfil do Usuário -->
         <div class="dropdown position-relative">
             <div class="user-profile" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                {% set user_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
-                {% set avatar_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else user.email.split('@')[0]) %}
+                {% if user %}
+                    {% set user_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else (user.email.split('@')[0] if user.email else 'Usuário')) %}
+                    {% set avatar_name = user.name if user.name else (user.first_name + ' ' + user.last_name if user.first_name or user.last_name else (user.email.split('@')[0] if user.email else 'User')) %}
+                {% else %}
+                    {% set user_name = 'Usuário' %}
+                    {% set avatar_name = 'User' %}
+                {% endif %}
                 <img src="https://ui-avatars.com/api/?name={{ avatar_name|urlencode }}&background=00b7b3&color=fff"
                      alt="User" class="user-avatar">
                 <div>
@@ -17,7 +22,7 @@
                         {{ user_name }}
                     </div>
                     <div class="user-role">
-                        {% if user.profile and user.profile.role %}
+                        {% if user and user.profile and user.profile.role %}
                             {{ user.profile.role|title }}
                         {% else %}
                             Usuário
@@ -32,7 +37,7 @@
                 <li>
                     <div class="dropdown-header px-3 py-2">
                         <div class="user-name-header">{{ user_name }}</div>
-                        <div class="user-email">{{ user.email }}</div>
+                        <div class="user-email">{{ user.email if user and user.email else 'N/A' }}</div>
                     </div>
                 </li>
                 <li><hr class="dropdown-divider"></li>

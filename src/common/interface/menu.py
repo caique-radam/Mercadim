@@ -2,6 +2,7 @@
 Gerencia itens e seções do menu lateral
 """
 from typing import List, Dict, Optional
+from flask import url_for
 
 
 def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
@@ -16,36 +17,18 @@ def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
     """
     sections = [
         {
-            'name': 'PRODUTOS',
+            'name': 'CADASTROS',
             'items': [
                 {
-                    'icon': 'bi-envelope',
-                    'text': 'Email',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-chat-dots',
-                    'text': 'Chat',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-check2-square',
-                    'text': 'Tarefas',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-calendar3',
-                    'text': 'Calendário',
-                    'url': '#',
+                    'icon': 'bi-building',
+                    'text': 'Fornecedores',
+                    'url': url_for('fornecedores.fornecedores_view'),
                     'active': False
                 },
                 {
                     'icon': 'bi-cart4',
                     'text': 'Produtos',
-                    'url': '#',
+                    'url': url_for('produtos.produtos_view'),
                     'active': False
                 },
             ]
@@ -56,7 +39,7 @@ def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
                 {
                     'icon': 'bi-people',
                     'text': 'Usuários',
-                    'url': '#',
+                    'url': url_for('user.user_view'),
                     'has_submenu': False,
                     'active': False
                 }
@@ -89,9 +72,9 @@ def get_menu_items(current_url: Optional[str] = None) -> List[Dict]:
             'active': current_url == '/' or current_url == '/dashboard'
         },
         {
-            'icon': 'bi-cart3',
+            'icon': 'bi-basket2',
             'text': 'Vendas',
-            'url': '#',
+            'url': url_for('venda.venda_view'),
             'active': False
         }
     ]

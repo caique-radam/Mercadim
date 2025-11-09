@@ -1,0 +1,23 @@
+<div class="list-container">
+    <div class="list-card shadow-sm">
+        <div class="list-card-body">
+            <!-- Cabeçalho -->
+            <div class="row mb-4">
+                <h3 class="mb-0 col-12 text-bold">{{ title }}</h3>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{{ add_url }}" class="btn btn-md btn-primary font-weight-bold">Adicionar +</a>
+                <div class="d-flex gap-4">
+                    <button class="btn btn-sm btn-secondary" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <form method="get" class="d-flex">
+                        <input type="text" name="search" class="form-control form-control-md" placeholder="Pesquisar..." value="{{ request.args.get('search', '') }}">
+                    </form>                        
+                </div>
+            </div>
+
+            {% include 'components/table.html' %}
+        </div>
+    </div>
+</div>

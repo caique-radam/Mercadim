@@ -140,6 +140,8 @@ body {
 .main-content {
     margin-left: var(--sidebar-width);
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .topbar {
@@ -278,6 +280,10 @@ body {
 
 .content-area {
     padding: 30px;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--topbar-height));
+    overflow: hidden;
 }
 
 .stat-card {
@@ -502,5 +508,507 @@ canvas {
     background: var(--color-primary);
     border-color: var(--color-primary);
     filter: brightness(1.2);
+    color: var(--text-primary);
+}
+
+/* Estilos para listagem */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.list-card {
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.list-card-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.list-table-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+/* Estilos da tabela na listagem */
+.list-card .table,
+.list-card table.table {
+    color: var(--text-primary) !important;
+    margin-bottom: 0;
+    background-color: transparent !important;
+}
+
+.list-card .table thead,
+.list-card table.table thead {
+    background: var(--color-surface-alt) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.list-card .table thead th,
+.list-card table.table thead th {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color) !important;
+    border-top: none !important;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    background-color: var(--color-surface-alt) !important;
+}
+
+.list-card .table tbody,
+.list-card table.table tbody {
+    background-color: transparent !important;
+}
+
+.list-card .table tbody tr,
+.list-card table.table tbody tr {
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 0.2s;
+}
+
+.list-card .table.table-hover tbody tr:hover,
+.list-card table.table.table-hover tbody tr:hover {
+    background: var(--color-surface-alt) !important;
+}
+
+.list-card .table tbody tr:hover td,
+.list-card table.table tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+.list-card .table tbody td,
+.list-card table.table tbody td {
+    color: var(--text-primary) !important;
+    padding: 12px;
+    vertical-align: middle;
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+}
+
+.list-card .table tbody td.text-muted,
+.list-card table.table tbody td.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Estilos dos botões na listagem */
+.list-card .btn-primary {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.list-card .btn-primary:hover,
+.list-card .btn-primary:focus {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    filter: brightness(1.2);
+    color: var(--text-primary) !important;
+}
+
+.list-card .btn-secondary {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+.list-card .btn-secondary:hover,
+.list-card .btn-secondary:focus {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--border-color) !important;
+    filter: brightness(1.2);
+    color: var(--text-primary) !important;
+}
+
+.list-card .btn-danger {
+    background: var(--color-error) !important;
+    border-color: var(--color-error) !important;
+    color: var(--text-primary) !important;
+}
+
+.list-card .btn-danger:hover,
+.list-card .btn-danger:focus {
+    background: var(--color-error) !important;
+    border-color: var(--color-error) !important;
+    filter: brightness(1.2);
+    color: var(--text-primary) !important;
+}
+
+/* Estilos dos inputs na listagem */
+.list-card .form-control {
+    background: var(--color-surface-alt) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.list-card .form-control:focus {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 183, 179, 0.25) !important;
+}
+
+.list-card .form-control::placeholder {
+    color: var(--text-disabled) !important;
+}
+
+/* Estilos do título na listagem */
+.list-card h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Sobrescrever estilos do Bootstrap para tabelas na listagem */
+.list-card .table > :not(caption) > * > * {
+    background-color: transparent !important;
+    border-bottom-width: 1px !important;
+    border-color: var(--border-color) !important;
+}
+
+.list-card .table > tbody > tr > td,
+.list-card .table > tbody > tr > th {
+    background-color: var(--color-surface) !important;
+}
+
+.list-card .table > tbody > tr:hover > td,
+.list-card .table > tbody > tr:hover > th {
+    background-color: var(--color-surface-alt) !important;
+}
+
+/* Estilos para formulários */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.form-card {
+    background: var(--color-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.form-card-body {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.form-card h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.form-card .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Estilos dos campos de formulário */
+.form-card .form-label {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.form-card .form-control,
+.form-card .form-select {
+    background: var(--color-surface-alt) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    padding: 10px 14px;
+}
+
+.form-card .form-control:focus,
+.form-card .form-select:focus {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 183, 179, 0.25) !important;
+}
+
+.form-card .form-control::placeholder {
+    color: var(--text-disabled) !important;
+}
+
+.form-card .form-control:disabled,
+.form-card .form-select:disabled {
+    background: var(--color-surface-alt) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-card .form-control[readonly] {
+    background: var(--color-surface-alt) !important;
+    opacity: 0.8;
+}
+
+/* Estilos para checkbox e radio */
+.form-card .form-check-input {
+    background-color: var(--color-surface-alt);
+    border: 1px solid var(--border-color);
+}
+
+.form-card .form-check-input:checked {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.form-card .form-check-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 183, 179, 0.25);
+}
+
+.form-card .form-check-label {
+    color: var(--text-primary);
+    margin-left: 8px;
+}
+
+/* Estilos para mensagens de erro */
+.form-card .is-invalid {
+    border-color: var(--color-error) !important;
+}
+
+.form-card .invalid-feedback {
+    color: var(--color-error);
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+.form-card .form-text {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem;
+}
+
+/* Estilos para alertas no formulário */
+.form-card .alert {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-card .alert-success {
+    background-color: rgba(124, 179, 66, 0.1);
+    color: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.form-card .alert-danger {
+    background-color: rgba(229, 57, 53, 0.1);
+    color: var(--color-error);
+    border-color: var(--color-error);
+}
+
+.form-card .alert-warning {
+    background-color: rgba(245, 124, 0, 0.1);
+    color: var(--color-warning);
+    border-color: var(--color-warning);
+}
+
+.form-card .alert-info {
+    background-color: rgba(0, 183, 179, 0.1);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.form-card .btn-close {
+    filter: invert(1);
+}
+
+/* Estilos para botões de ação do formulário */
+.form-actions {
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.form-card .btn-primary {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.form-card .btn-primary:hover,
+.form-card .btn-primary:focus {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    filter: brightness(1.2);
+    color: var(--text-primary) !important;
+}
+
+.form-card .btn-secondary {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.form-card .btn-secondary:hover,
+.form-card .btn-secondary:focus {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--border-color) !important;
+    filter: brightness(1.2);
+    color: var(--text-primary) !important;
+}
+
+.form-card .btn-outline-secondary {
+    background: transparent !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    font-weight: 600;
+    padding: 10px 20px;
+}
+
+.form-card .btn-outline-secondary:hover,
+.form-card .btn-outline-secondary:focus {
+    background: var(--color-surface-alt) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Estilos para campos de arquivo */
+.form-card input[type="file"] {
+    padding: 8px !important;
+}
+
+.form-card input[type="file"]::file-selector-button {
+    background: var(--color-primary);
+    color: var(--text-primary);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.form-card input[type="file"]::file-selector-button:hover {
+    filter: brightness(1.2);
+}
+
+/* Estilos específicos para página de venda */
+.venda-container .stat-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilos para tabelas dentro de stat-card na página de venda */
+.venda-container .stat-card .table {
+    color: var(--text-primary) !important;
+    margin-bottom: 0;
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table thead {
+    background: var(--color-surface-alt) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.venda-container .stat-card .table thead th {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color) !important;
+    border-top: none !important;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    background-color: var(--color-surface-alt) !important;
+}
+
+.venda-container .stat-card .table tbody {
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table tbody tr {
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 0.2s;
+}
+
+.venda-container .stat-card .table.table-hover tbody tr:hover {
+    background: var(--color-surface-alt) !important;
+}
+
+.venda-container .stat-card .table tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table tbody td {
+    color: var(--text-primary) !important;
+    padding: 12px;
+    vertical-align: middle;
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+}
+
+.venda-container .stat-card .list-table-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.venda-item-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--color-surface-alt);
+    transition: all 0.2s;
+}
+
+.venda-item-card:hover {
+    background: var(--color-surface);
+    border-color: var(--color-primary);
+}
+
+.venda-total-section {
+    border-top: 1px solid var(--border-color);
+    padding: 24px;
+    margin-top: auto;
+}
+
+.venda-total-value {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Ajustes para botões na página de venda */
+.venda-container .btn-outline-danger:hover {
+    background: var(--color-error);
+    border-color: var(--color-error);
+    color: var(--text-primary);
+}
+
+.venda-container .btn-outline-success:hover {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: var(--text-primary);
+}
+
+.venda-container .btn-outline-secondary:hover {
+    background: var(--color-surface);
+    border-color: var(--border-color);
     color: var(--text-primary);
 }

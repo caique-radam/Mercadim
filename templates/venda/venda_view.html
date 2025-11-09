@@ -1,0 +1,247 @@
+{% extends "dashboard.html" %}
+
+{% block title %}Nova Venda - Mercadim{% endblock %}
+
+{% block content_area %}
+<div class="row g-3 venda-container" style="height: 100%;">
+    <!-- Seção de produtos -->
+    <div class="col-lg-8">
+        <div class="stat-card" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="stat-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Produtos
+                </h4>
+            </div>
+            <div style="flex: 1; overflow-y: auto; min-height: 0;">
+                <div class="list-table-container">
+                    <table class="table table-hover align-middle" style="color: var(--text-primary);">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produto in produtos %}
+                            <tr>
+                                <td>{{ produto.codigo }}</td>
+                                <td>{{ produto.nome }}</td>
+                                <td>
+                                    <input type="number" min="1" value="1" id="qtd_{{ produto.id }}" 
+                                           class="form-control form-control-sm" 
+                                           style="width: 80px; background: var(--color-surface-alt); border: 1px solid var(--border-color); color: var(--text-primary);">
+                                </td>
+                                <td>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-primary btn-adicionar-item" 
+                                            data-produto-id="{{ produto.id }}">
+                                        <i class="bi bi-plus-circle me-1"></i>
+                                        Adicionar
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center" style="color: var(--text-secondary);">Nenhum produto encontrado</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção do carrinho -->
+    <div class="col-lg-4">
+        <div class="stat-card" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="stat-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-cart me-2"></i>
+                    Itens da Venda
+                </h4>
+            </div>
+            <div style="flex: 1; overflow-y: auto; min-height: 0; padding: 0 24px;">
+                {% if carrinho %}
+                    {% for item in carrinho %}
+                    <div class="d-flex justify-content-between align-items-center venda-item-card">
+                        <div>
+                            <strong style="color: var(--text-primary);">{{ item.produto.nome }}</strong><br>
+                            <small style="color: var(--text-secondary);">Cód: {{ item.produto.codigo }}</small><br>
+                            <small style="color: var(--text-secondary);">R$ {{ "%.2f"|format(item.produto.preco) }}</small>
+                        </div>
+                        <div class="text-end">
+                            <div class="btn-group btn-group-sm mb-2" role="group">
+                                <button type="button" 
+                                        class="btn btn-outline-danger btn-diminuir-item" 
+                                        data-item-id="{{ item.id }}"
+                                        style="border-color: var(--color-error); color: var(--color-error);">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <span class="px-2 item-quantidade" 
+                                      data-item-id="{{ item.id }}"
+                                      style="color: var(--text-primary); min-width: 30px; display: inline-block; text-align: center;">{{ item.quantidade }}</span>
+                                <button type="button" 
+                                        class="btn btn-outline-success btn-aumentar-item" 
+                                        data-item-id="{{ item.id }}"
+                                        style="border-color: var(--color-success); color: var(--color-success);">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                            <button type="button" 
+                                    class="btn btn-outline-secondary btn-sm w-100 btn-remover-item" 
+                                    data-item-id="{{ item.id }}"
+                                    style="background: transparent; border-color: var(--border-color); color: var(--text-secondary);">
+                                <i class="bi bi-trash me-1"></i>
+                                Remover
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center mb-0" style="color: var(--text-secondary); padding: 20px;">Nenhum item adicionado</p>
+                {% endif %}
+            </div>
+            <div class="venda-total-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 style="color: var(--text-primary); margin: 0;">Total:</h5>
+                    <h5 class="venda-total-value" style="margin: 0;">R$ {{ "%.2f"|format(total) }}</h5>
+                </div>
+
+                <form action="{{ url_for('venda.finalizar') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="pagamento" class="form-label" style="color: var(--text-primary); font-weight: 500;">Forma de Pagamento</label>
+                        <select class="form-select" id="pagamento" name="pagamento" required
+                                style="background: var(--color-surface-alt); border: 1px solid var(--border-color); color: var(--text-primary);">
+                            <option value="">Selecione</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="cartao">Cartão</option>
+                            <option value="pix">PIX</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill" 
+                                style="background: var(--color-primary); border-color: var(--color-primary); color: var(--text-primary);">
+                            <i class="bi bi-check-circle me-2"></i>
+                            Fechar Venda
+                        </button>
+                        <a href="{{ url_for('venda.cancelar') }}" class="btn btn-danger" 
+                           style="background: var(--color-error); border-color: var(--color-error); color: var(--text-primary);">
+                            <i class="bi bi-x-circle me-2"></i>
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Função auxiliar para fazer requisições AJAX
+    async function fazerRequisicao(url, method = 'POST', data = null) {
+        try {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'same-origin'
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            const response = await fetch(url, options);
+            
+            if (response.redirected) {
+                // Se a resposta foi um redirect, recarrega a página
+                window.location.href = response.url;
+                return;
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                // Recarrega a página para atualizar o carrinho
+                window.location.reload();
+            } else {
+                alert(result.error || 'Erro ao processar a requisição');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao processar a requisição. Tente novamente.');
+        }
+    }
+
+    // Adicionar item ao carrinho
+    document.querySelectorAll('.btn-adicionar-item').forEach(button => {
+        button.addEventListener('click', async function() {
+            const produtoId = this.getAttribute('data-produto-id');
+            const quantidadeInput = document.getElementById('qtd_' + produtoId);
+            const quantidade = quantidadeInput ? parseInt(quantidadeInput.value) : 1;
+
+            if (quantidade < 1) {
+                alert('A quantidade deve ser maior que zero');
+                return;
+            }
+
+            // Desabilita o botão durante a requisição
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adicionando...';
+
+            await fazerRequisicao('{{ url_for("venda.adicionar_item") }}', 'POST', {
+                produto_id: produtoId,
+                quantidade: quantidade
+            });
+
+            // Reabilita o botão (caso não tenha recarregado)
+            this.disabled = false;
+            this.innerHTML = '<i class="bi bi-plus-circle me-1"></i>Adicionar';
+        });
+    });
+
+    // Aumentar quantidade do item
+    document.querySelectorAll('.btn-aumentar-item').forEach(button => {
+        button.addEventListener('click', async function() {
+            const itemId = this.getAttribute('data-item-id');
+            
+            this.disabled = true;
+            await fazerRequisicao('{{ url_for("venda.aumentar_item", item_id=0) }}'.replace('0', itemId));
+            this.disabled = false;
+        });
+    });
+
+    // Diminuir quantidade do item
+    document.querySelectorAll('.btn-diminuir-item').forEach(button => {
+        button.addEventListener('click', async function() {
+            const itemId = this.getAttribute('data-item-id');
+            
+            this.disabled = true;
+            await fazerRequisicao('{{ url_for("venda.diminuir_item", item_id=0) }}'.replace('0', itemId));
+            this.disabled = false;
+        });
+    });
+
+    // Remover item do carrinho
+    document.querySelectorAll('.btn-remover-item').forEach(button => {
+        button.addEventListener('click', async function() {
+            if (!confirm('Deseja realmente remover este item do carrinho?')) {
+                return;
+            }
+
+            const itemId = this.getAttribute('data-item-id');
+            
+            this.disabled = true;
+            await fazerRequisicao('{{ url_for("venda.remover_item", item_id=0) }}'.replace('0', itemId));
+            this.disabled = false;
+        });
+    });
+});
+</script>
+{% endblock %}

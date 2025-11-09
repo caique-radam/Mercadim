@@ -3,11 +3,15 @@ from flask_session import Session
 
 from src.features.auth import auth_bp
 from src.features.profile import profile_bp
+from src.features.user import user_bp
+from src.features.fornecedores import fornecedores_bp
+from src.features.produtos import produtos_bp
 from config import Config
 from src.core import init_supabase
 from src.common.interface import get_interface_context
 import os
 from flask import render_template
+from src.features.venda import venda_bp
 
 app = Flask(
     __name__,
@@ -26,7 +30,10 @@ init_supabase(app)
 # Registra as rotas do app
 app.register_blueprint(auth_bp)
 app.register_blueprint(profile_bp)
-
+app.register_blueprint(user_bp)
+app.register_blueprint(fornecedores_bp)
+app.register_blueprint(produtos_bp)
+app.register_blueprint(venda_bp)
 # Context Processor - Injeta contexto da interface em todos os templates
 @app.context_processor
 def inject_interface_context():

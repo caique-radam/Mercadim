@@ -1,0 +1,227 @@
+<div class="form-container">
+    <div class="form-card shadow-sm">
+        <div class="form-card-body">
+            <!-- Cabeçalho -->
+            <div class="row mb-4">
+                <h3 class="mb-0 col-12 text-bold">{{ title }}</h3>
+                {% if subtitle %}
+                <p class="text-muted mt-2 mb-0">{{ subtitle }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Mensagens Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Formulário -->
+            <form method="{{ method|default('POST') }}" action="{{ action_url }}" {% if enctype %}enctype="{{ enctype }}"{% endif %}>
+                {% if csrf_token %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                {% endif %}
+
+                <div class="row">
+                    {% for field in fields %}
+                        {% set field_id = field.get('id') or field.get('name') %}
+                        {% set field_name = field.get('name', '') %}
+                        {% set field_type = field.get('type', 'text') %}
+                        {% set field_label = field.get('label', '') %}
+                        {% set field_placeholder = field.get('placeholder', '') %}
+                        {% set field_required = field.get('required', False) %}
+                        {% set field_value = field.get('value') or (data.get(field_name) if data else '') %}
+                        {% set field_class = field.get('class', '') %}
+                        {% set field_cols = field.get('cols', 12) %}
+                        {% set field_options = field.get('options', []) %}
+                        {% set field_rows = field.get('rows', 3) %}
+                        {% set field_help = field.get('help', '') %}
+                        {% set field_errors = field.get('errors', []) %}
+                        {% set field_readonly = field.get('readonly', False) %}
+                        {% set field_disabled = field.get('disabled', False) %}
+
+                        <div class="col-md-{{ field_cols }} mb-3">
+                            <!-- Label -->
+                            {% if field_type != 'hidden' and field_type != 'checkbox' %}
+                                <label for="{{ field_id }}" class="form-label">
+                                    {{ field_label }}
+                                    {% if field_required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                            {% endif %}
+
+                            <!-- Campo de Texto, Email, Password, Number, etc -->
+                            {% if field_type in ['text', 'email', 'password', 'number', 'tel', 'url', 'date', 'datetime-local', 'time', 'hidden'] %}
+                                <input 
+                                    type="{{ field_type }}" 
+                                    class="form-control {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                    id="{{ field_id }}" 
+                                    name="{{ field_name }}" 
+                                    {% if field_value %}value="{{ field_value }}"{% endif %}
+                                    {% if field_placeholder %}placeholder="{{ field_placeholder }}"{% endif %}
+                                    {% if field_required %}required{% endif %}
+                                    {% if field_readonly %}readonly{% endif %}
+                                    {% if field_disabled %}disabled{% endif %}
+                                    {% if field.get('min') %}min="{{ field.get('min') }}"{% endif %}
+                                    {% if field.get('max') %}max="{{ field.get('max') }}"{% endif %}
+                                    {% if field.get('step') %}step="{{ field.get('step') }}"{% endif %}
+                                    {% if field.get('pattern') %}pattern="{{ field.get('pattern') }}"{% endif %}
+                                >
+                            
+                            <!-- Campo Textarea -->
+                            {% elif field_type == 'textarea' %}
+                                <textarea 
+                                    class="form-control {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                    id="{{ field_id }}" 
+                                    name="{{ field_name }}" 
+                                    rows="{{ field_rows }}"
+                                    {% if field_placeholder %}placeholder="{{ field_placeholder }}"{% endif %}
+                                    {% if field_required %}required{% endif %}
+                                    {% if field_readonly %}readonly{% endif %}
+                                    {% if field_disabled %}disabled{% endif %}
+                                >{% if field_value %}{{ field_value }}{% endif %}</textarea>
+                            
+                            <!-- Campo Select -->
+                            {% elif field_type == 'select' %}
+                                <select 
+                                    class="form-select {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                    id="{{ field_id }}" 
+                                    name="{{ field_name }}"
+                                    {% if field_required %}required{% endif %}
+                                    {% if field_disabled %}disabled{% endif %}
+                                >
+                                    {% if field.get('empty_option') %}
+                                        <option value="">{{ field.get('empty_option') }}</option>
+                                    {% endif %}
+                                    {% for option in field_options %}
+                                        {% if option is mapping %}
+                                            <option value="{{ option.get('value', '') }}" {% if option.get('value') == field_value %}selected{% endif %}>
+                                                {{ option.get('label', option.get('value', '')) }}
+                                            </option>
+                                        {% else %}
+                                            <option value="{{ option }}" {% if option == field_value %}selected{% endif %}>
+                                                {{ option }}
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            
+                            <!-- Campo Checkbox -->
+                            {% elif field_type == 'checkbox' %}
+                                <div class="form-check">
+                                    <input 
+                                        class="form-check-input {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                        type="checkbox" 
+                                        id="{{ field_id }}" 
+                                        name="{{ field_name }}"
+                                        {% if field_value or field.get('checked') %}checked{% endif %}
+                                        {% if field_required %}required{% endif %}
+                                        {% if field_disabled %}disabled{% endif %}
+                                    >
+                                    <label class="form-check-label" for="{{ field_id }}">
+                                        {{ field_label }}
+                                        {% if field_required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                </div>
+                            
+                            <!-- Campo Radio -->
+                            {% elif field_type == 'radio' %}
+                                <div>
+                                    {% for option in field_options %}
+                                        {% set option_id = field_id ~ '_' ~ loop.index0 %}
+                                        {% if option is mapping %}
+                                            {% set option_value = option.get('value', '') %}
+                                            {% set option_label = option.get('label', option_value) %}
+                                        {% else %}
+                                            {% set option_value = option %}
+                                            {% set option_label = option %}
+                                        {% endif %}
+                                        <div class="form-check">
+                                            <input 
+                                                class="form-check-input {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                                type="radio" 
+                                                id="{{ option_id }}" 
+                                                name="{{ field_name }}"
+                                                value="{{ option_value }}"
+                                                {% if option_value == field_value %}checked{% endif %}
+                                                {% if field_required %}required{% endif %}
+                                                {% if field_disabled %}disabled{% endif %}
+                                            >
+                                            <label class="form-check-label" for="{{ option_id }}">
+                                                {{ option_label }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            
+                            <!-- Campo File -->
+                            {% elif field_type == 'file' %}
+                                <input 
+                                    type="file" 
+                                    class="form-control {{ field_class }} {% if field_errors %}is-invalid{% endif %}" 
+                                    id="{{ field_id }}" 
+                                    name="{{ field_name }}"
+                                    {% if field_required %}required{% endif %}
+                                    {% if field_disabled %}disabled{% endif %}
+                                    {% if field.get('accept') %}accept="{{ field.get('accept') }}"{% endif %}
+                                    {% if field.get('multiple') %}multiple{% endif %}
+                                >
+                                {% if field_value %}
+                                    <small class="form-text text-muted mt-1">Arquivo atual: {{ field_value }}</small>
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- Mensagem de Ajuda -->
+                            {% if field_help %}
+                                <small class="form-text text-muted mt-1">{{ field_help }}</small>
+                            {% endif %}
+
+                            <!-- Mensagens de Erro -->
+                            {% if field_errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in field_errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="form-actions mt-4 pt-3 border-top">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {% if cancel_url %}
+                                <a href="{{ cancel_url }}" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle"></i> Cancelar
+                                </a>
+                            {% endif %}
+                        </div>
+                        <div class="d-flex gap-2">
+                            {% if submit_label %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> {{ submit_label }}
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Salvar
+                                </button>
+                            {% endif %}
+                            {% if reset_label %}
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-counterclockwise"></i> {{ reset_label }}
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
