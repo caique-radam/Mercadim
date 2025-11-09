@@ -9,6 +9,7 @@ from src.core import init_supabase
 from src.common.interface import get_interface_context
 import os
 from flask import render_template
+from src.features.venda import venda_bp
 
 app = Flask(
     __name__,
@@ -28,7 +29,7 @@ init_supabase(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(user_bp)
-
+app.register_blueprint(venda_bp)
 # Context Processor - Injeta contexto da interface em todos os templates
 @app.context_processor
 def inject_interface_context():

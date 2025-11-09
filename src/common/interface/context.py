@@ -35,7 +35,8 @@ def get_interface_context() -> Dict:
             'sidebar_menu_sections': menu_sections,
             'sidebar_main_menu': main_menu_items,
             'user_role': user_role,
-            'current_url': current_url
+            'current_url': current_url,
+            'user': user  # Injeta o usuário da sessão para uso nos templates
         }
     except Exception:
         # Em caso de erro, retornar valores padrão
@@ -43,6 +44,7 @@ def get_interface_context() -> Dict:
             'sidebar_menu_sections': get_menu_sections(),
             'sidebar_main_menu': get_menu_items(),
             'user_role': None,
-            'current_url': None
+            'current_url': None,
+            'user': {}  # Retorna dicionário vazio em caso de erro
         }
 

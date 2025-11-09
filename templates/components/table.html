@@ -1,0 +1,42 @@
+<!-- Tabela -->
+<div class="table-responsive list-table-container">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                {% for header in headers %}
+                    <th scope="col">{{ header }}</th>
+                {% endfor %}
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if rows %}
+                {% for row in rows %}
+                    <tr>
+                        {# row[0] contém o ID (UUID) - não exibimos, apenas usamos nas ações #}
+                        {% for cell in row[1:] %}
+                            <td>{{ cell }}</td>
+                        {% endfor %}
+                        <td>
+                            {# Usa row[0] (ID/UUID) para as ações de editar e excluir #}
+                            <a href="{{ url_for('user.edit_user', id=row[0]) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('user.delete_user', id=row[0]) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="{{ headers|length }}" class="text-center text-muted py-4">
+                        Nenhum registro encontrado
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>

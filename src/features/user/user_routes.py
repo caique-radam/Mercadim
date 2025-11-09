@@ -1,6 +1,12 @@
 from flask import Blueprint, render_template, session, request, redirect, url_for, flash
 from src.features.auth.auth_decorators import login_required
-from src.features.user.user_service import list_users
+from src.features.user.user_service import (
+    list_users, 
+    create_user as create_user_service, 
+    get_user_by_id, 
+    update_user, 
+    delete_user as delete_user_service
+)
 
 user_bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -10,25 +16,9 @@ def user_view():
     logged_user = session.get('user', {})
 
     users_data = list_users()
-    if not users_data['success']:
-        flash(users_data['error'], 'danger')
-        return redirect(url_for('user.user_view'))
 
-    # Processa os dados do Supabase
-    users_list = users_data['data'].data if users_data['data'] else []
-    
-    headers = ["Primeiro Nome", "Último Nome", "Email", "Role"]
-    rows = []
-    for user in users_list:
-        # O primeiro elemento é o ID (UUID) - será usado nas ações mas não exibido na tabela
-        # O template usa row[1:] para pular o ID ao exibir as células
-        rows.append([
-            user.get('id', ''),  # ID (UUID) - não será exibido
-            user.get('first_name', ''),
-            user.get('last_name', ''),
-            user.get('email', ''),
-            user.get('role', '')
-        ])
+    headers = ["Primeiro Nome", "Último Nome", "Email", "Role", "Telefone"]
+    rows = users_data['data']
     
     return render_template(
         'user/list_user.html',
@@ -46,20 +36,63 @@ def create_user():
     logged_user = session.get('user', {})
     
     if request.method == 'POST':
-        # TODO: Implementar lógica de criação
-        flash('Usuário criado com sucesso!', 'success')
-        return redirect(url_for('user.user_view'))
+        # Coleta os dados do formulário
+        user_data = {
+            'first_name': request.form.get('first_name', '').strip(),
+            'last_name': request.form.get('last_name', '').strip(),
+            'email': request.form.get('email', '').strip(),
+            'phone': request.form.get('phone', '').strip() or None,
+            'password': request.form.get('password', '').strip(),
+            'confirm_password': request.form.get('confirm_password', '').strip(),
+            'role': request.form.get('role', 'authenticated').strip()  # Valor padrão
+        }
+        
+        # Validação básica
+        if not user_data['first_name']:
+            flash('Primeiro nome é obrigatório', 'error')
+            return redirect(url_for('user.create_user'))
+        if not user_data['last_name']:
+            flash('Último nome é obrigatório', 'error')
+            return redirect(url_for('user.create_user'))
+        if not user_data['email']:
+            flash('E-mail é obrigatório', 'error')
+            return redirect(url_for('user.create_user'))
+        if not user_data['password']:
+            flash('Senha é obrigatória', 'error')
+            return redirect(url_for('user.create_user'))
+        if user_data['password'] != user_data['confirm_password']:
+            flash('As senhas não correspondem', 'error')
+            return redirect(url_for('user.create_user'))
+        
+        # Chama o serviço para criar o usuário
+        result = create_user_service(user_data)
+        
+        if result['success']:
+            flash('Usuário criado com sucesso!', 'success')
+            return redirect(url_for('user.user_view'))
+        else:
+            flash(f'Erro ao criar usuário: {result.get("error", "Erro desconhecido")}', 'error')
+            return redirect(url_for('user.create_user'))
     
-    # Exemplo de campos para o formulário
+    # Campos do formulário baseados nas colunas da listagem
     fields = [
         {
-            'name': 'name',
-            'id': 'name',
+            'name': 'first_name',
+            'id': 'first_name',
             'type': 'text',
-            'label': 'Nome',
-            'placeholder': 'Digite o nome completo',
+            'label': 'Primeiro Nome',
+            'placeholder': 'Digite o primeiro nome',
             'required': True,
-            'cols': 12
+            'cols': 6
+        },
+        {
+            'name': 'last_name',
+            'id': 'last_name',
+            'type': 'text',
+            'label': 'Último Nome',
+            'placeholder': 'Digite o último nome',
+            'required': True,
+            'cols': 6
         },
         {
             'name': 'email',
@@ -80,49 +113,35 @@ def create_user():
             'cols': 6
         },
         {
-            'name': 'status',
-            'id': 'status',
-            'type': 'select',
-            'label': 'Status',
+            'name': 'password',
+            'id': 'password',
+            'type': 'password',
+            'label': 'Senha',
+            'placeholder': 'Digite a senha',
             'required': True,
-            'cols': 6,
-            'options': [
-                {'value': 'active', 'label': 'Ativo'},
-                {'value': 'inactive', 'label': 'Inativo'}
-            ],
-            'empty_option': 'Selecione o status'
+            'cols': 6
         },
         {
-            'name': 'role',
-            'id': 'role',
-            'type': 'select',
-            'label': 'Perfil',
+            'name': 'confirm_password',
+            'id': 'confirm_password',
+            'type': 'password',
+            'label': 'Confirmar Senha',
+            'placeholder': 'Confirme a senha',
             'required': True,
-            'cols': 6,
-            'options': [
-                {'value': 'admin', 'label': 'Administrador'},
-                {'value': 'user', 'label': 'Usuário'},
-                {'value': 'manager', 'label': 'Gerente'}
-            ]
-        },
-        {
-            'name': 'notes',
-            'id': 'notes',
-            'type': 'textarea',
-            'label': 'Observações',
-            'placeholder': 'Digite observações sobre o usuário...',
-            'required': False,
-            'cols': 12,
-            'rows': 4
-        },
-        {
-            'name': 'active',
-            'id': 'active',
-            'type': 'checkbox',
-            'label': 'Usuário ativo',
-            'checked': True,
-            'cols': 12
+            'cols': 6
         }
+        # {
+        #     'name': 'role',
+        #     'id': 'role',
+        #     'type': 'select',
+        #     'label': 'Perfil',
+        #     'required': True,
+        #     'cols': 12,
+        #     'options': [
+        #         {'value': 'authenticated', 'label': 'Autenticado'},
+        #     ],
+        #     'empty_option': 'Selecione o perfil'
+        # }
     ]
     
     return render_template(
@@ -144,32 +163,61 @@ def edit_user(id):
     logged_user = session.get('user', {})
     
     if request.method == 'POST':
-        # TODO: Implementar lógica de edição
-        flash('Usuário atualizado com sucesso!', 'success')
+        # Coleta os dados do formulário
+        user_data = {
+            'first_name': request.form.get('first_name', '').strip(),
+            'last_name': request.form.get('last_name', '').strip(),
+            'phone': request.form.get('phone', '').strip() or None
+        }
+        
+        # Validação básica
+        if not user_data['first_name']:
+            flash('Primeiro nome é obrigatório', 'error')
+            return redirect(url_for('user.edit_user', id=id))
+        if not user_data['last_name']:
+            flash('Último nome é obrigatório', 'error')
+            return redirect(url_for('user.edit_user', id=id))
+        
+        # Chama o serviço para atualizar o usuário
+        result = update_user(id, user_data)
+        
+        if result['success']:
+            flash('Usuário atualizado com sucesso!', 'success')
+            return redirect(url_for('user.user_view'))
+        else:
+            flash(f'Erro ao atualizar usuário: {result.get("error", "Erro desconhecido")}', 'error')
+            return redirect(url_for('user.edit_user', id=id))
+    
+    # Busca os dados do usuário no banco de dados
+    result = get_user_by_id(id)
+    
+    if not result['success']:
+        flash(f'Usuário não encontrado: {result.get("error", "Erro desconhecido")}', 'error')
         return redirect(url_for('user.user_view'))
     
-    # Exemplo de dados do usuário (em produção, viria do banco de dados)
-    user_data = {
-        'name': 'Caíque',
-        'email': 'caique@example.com',
-        'phone': '(11) 99999-9999',
-        'status': 'active',
-        'role': 'admin',
-        'notes': 'Usuário administrador do sistema',
-        'active': True
-    }
+    user_data = result['data']
     
-    # Exemplo de campos para o formulário
+    # Campos do formulário baseados nas colunas da listagem (igual ao create_user)
     fields = [
         {
-            'name': 'name',
-            'id': 'name',
+            'name': 'first_name',
+            'id': 'first_name',
             'type': 'text',
-            'label': 'Nome',
-            'placeholder': 'Digite o nome completo',
+            'label': 'Primeiro Nome',
+            'placeholder': 'Digite o primeiro nome',
             'required': True,
-            'cols': 12,
-            'value': user_data.get('name')
+            'cols': 6,
+            'value': user_data.get('first_name', '')
+        },
+        {
+            'name': 'last_name',
+            'id': 'last_name',
+            'type': 'text',
+            'label': 'Último Nome',
+            'placeholder': 'Digite o último nome',
+            'required': True,
+            'cols': 6,
+            'value': user_data.get('last_name', '')
         },
         {
             'name': 'email',
@@ -179,7 +227,8 @@ def edit_user(id):
             'placeholder': 'usuario@example.com',
             'required': True,
             'cols': 6,
-            'value': user_data.get('email')
+            'value': user_data.get('email', ''),
+            'readonly': True  # Email geralmente não é editável
         },
         {
             'name': 'phone',
@@ -189,60 +238,32 @@ def edit_user(id):
             'placeholder': '(00) 00000-0000',
             'required': False,
             'cols': 6,
-            'value': user_data.get('phone')
+            'value': user_data.get('phone', '')
         },
         {
-            'name': 'status',
-            'id': 'status',
-            'type': 'select',
-            'label': 'Status',
-            'required': True,
-            'cols': 6,
-            'options': [
-                {'value': 'active', 'label': 'Ativo'},
-                {'value': 'inactive', 'label': 'Inativo'}
-            ],
-            'value': user_data.get('status')
-        },
-        {
-            'name': 'role',
-            'id': 'role',
-            'type': 'select',
-            'label': 'Perfil',
-            'required': True,
-            'cols': 6,
-            'options': [
-                {'value': 'admin', 'label': 'Administrador'},
-                {'value': 'user', 'label': 'Usuário'},
-                {'value': 'manager', 'label': 'Gerente'}
-            ],
-            'value': user_data.get('role')
-        },
-        {
-            'name': 'notes',
-            'id': 'notes',
-            'type': 'textarea',
-            'label': 'Observações',
-            'placeholder': 'Digite observações sobre o usuário...',
+            'name': 'password',
+            'id': 'password',
+            'type': 'password',
+            'label': 'Senha',
+            'placeholder': 'Digite a senha',
             'required': False,
-            'cols': 12,
-            'rows': 4,
-            'value': user_data.get('notes')
+            'cols': 6
         },
         {
-            'name': 'active',
-            'id': 'active',
-            'type': 'checkbox',
-            'label': 'Usuário ativo',
-            'checked': user_data.get('active', False),
-            'cols': 12
-        }
+            'name': 'confirm_password',
+            'id': 'confirm_password',
+            'type': 'password',
+            'label': 'Confirmar Senha',
+            'placeholder': 'Confirme a senha',
+            'required': False,
+            'cols': 6
+        },
     ]
     
     return render_template(
         'user/form_user.html',
         title="Editar Usuário",
-        subtitle=f"Editando usuário ID: {id}",
+        subtitle=f"Editando usuário: {user_data.get('first_name', '')} {user_data.get('last_name', '')}",
         fields=fields,
         action_url=url_for('user.edit_user', id=id),
         method='POST',
@@ -256,6 +277,12 @@ def edit_user(id):
 @login_required
 def delete_user(id):
     """Rota para deletar um usuário"""
-    # TODO: Implementar lógica de exclusão
-    flash('Funcionalidade de exclusão ainda não implementada', 'info')
+    # Chama o serviço para deletar o usuário
+    result = delete_user_service(id)
+    
+    if result['success']:
+        flash('Usuário deletado com sucesso!', 'success')
+    else:
+        flash(f'Erro ao deletar usuário: {result.get("error", "Erro desconhecido")}', 'error')
+    
     return redirect(url_for('user.user_view'))

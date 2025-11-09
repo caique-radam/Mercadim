@@ -905,3 +905,110 @@ canvas {
 .form-card input[type="file"]::file-selector-button:hover {
     filter: brightness(1.2);
 }
+
+/* Estilos específicos para página de venda */
+.venda-container .stat-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilos para tabelas dentro de stat-card na página de venda */
+.venda-container .stat-card .table {
+    color: var(--text-primary) !important;
+    margin-bottom: 0;
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table thead {
+    background: var(--color-surface-alt) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.venda-container .stat-card .table thead th {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color) !important;
+    border-top: none !important;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    background-color: var(--color-surface-alt) !important;
+}
+
+.venda-container .stat-card .table tbody {
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table tbody tr {
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 0.2s;
+}
+
+.venda-container .stat-card .table.table-hover tbody tr:hover {
+    background: var(--color-surface-alt) !important;
+}
+
+.venda-container .stat-card .table tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+.venda-container .stat-card .table tbody td {
+    color: var(--text-primary) !important;
+    padding: 12px;
+    vertical-align: middle;
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+}
+
+.venda-container .stat-card .list-table-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.venda-item-card {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: var(--color-surface-alt);
+    transition: all 0.2s;
+}
+
+.venda-item-card:hover {
+    background: var(--color-surface);
+    border-color: var(--color-primary);
+}
+
+.venda-total-section {
+    border-top: 1px solid var(--border-color);
+    padding: 24px;
+    margin-top: auto;
+}
+
+.venda-total-value {
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Ajustes para botões na página de venda */
+.venda-container .btn-outline-danger:hover {
+    background: var(--color-error);
+    border-color: var(--color-error);
+    color: var(--text-primary);
+}
+
+.venda-container .btn-outline-success:hover {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: var(--text-primary);
+}
+
+.venda-container .btn-outline-secondary:hover {
+    background: var(--color-surface);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}

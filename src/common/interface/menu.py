@@ -92,8 +92,8 @@ def get_menu_items(current_url: Optional[str] = None) -> List[Dict]:
         {
             'icon': 'bi-cart3',
             'text': 'Vendas',
-            'url': '#',
-            'active': False
+            'url': '/venda',
+            'active': current_url == '/venda'
         }
     ]
     
