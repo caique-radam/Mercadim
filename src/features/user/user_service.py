@@ -217,7 +217,6 @@ def update_user(user_id: str, user_data: dict):
         user_data: Dicionário com os dados a serem atualizados
             - first_name: str (opcional) - vai para profiles e user_metadata
             - last_name: str (opcional) - vai para profiles e user_metadata
-            - email: str (opcional) - vai para auth.users
             - phone: str (opcional) - vai para auth.users
             - password: str (opcional) - vai para auth.users
             - confirm_password: str (opcional) - usado apenas para validação
@@ -234,7 +233,6 @@ def update_user(user_id: str, user_data: dict):
         
         # Prepara os dados para atualização no profile (first_name, last_name)
         profile_update_data = {}
-        
         if 'first_name' in user_data and user_data.get('first_name'):
             profile_update_data['first_name'] = user_data['first_name'].strip()
         if 'last_name' in user_data and user_data.get('last_name'):
@@ -243,28 +241,14 @@ def update_user(user_id: str, user_data: dict):
         # Prepara os dados para atualização no auth.users
         auth_update_payload = {}
         
-        # Email (se fornecido)
-        if 'email' in user_data and user_data.get('email'):
-            auth_update_payload['email'] = user_data['email'].strip()
-        
-        # Phone (se fornecido)
+        # Phone (se fornecido ou para limpar)
         if 'phone' in user_data:
             phone_value = user_data['phone'].strip() if user_data.get('phone') else None
-            if phone_value:
-                auth_update_payload['phone'] = phone_value
+            auth_update_payload['phone'] = phone_value
         
-        # Password (se fornecido e confirmado)
+        # Password (se fornecido)
         if 'password' in user_data and user_data.get('password'):
-            password = user_data['password'].strip()
-            confirm_password = user_data.get('confirm_password', '').strip()
-            
-            if password and password == confirm_password:
-                auth_update_payload['password'] = password
-            elif password and confirm_password:
-                return {
-                    "success": False,
-                    "error": "As senhas não correspondem"
-                }
+            auth_update_payload['password'] = user_data['password'].strip()
         
         # Prepara user_metadata (first_name, last_name para raw_user_meta_data)
         auth_metadata = {}
@@ -273,21 +257,21 @@ def update_user(user_id: str, user_data: dict):
         if 'last_name' in user_data and user_data.get('last_name'):
             auth_metadata['last_name'] = user_data['last_name'].strip()
         
-        # Remove campos None/vazios
-        profile_update_data = {k: v for k, v in profile_update_data.items() if v is not None and v != ''}
-        auth_update_payload = {k: v for k, v in auth_update_payload.items() if v is not None and v != ''}
+        # Remove campos vazios, mas preserva phone se foi fornecido (mesmo que None)
+        profile_update_data = {k: v for k, v in profile_update_data.items() if v}
         auth_metadata = {k: v for k, v in auth_metadata.items() if v}
         
+        # Verifica se há algo para atualizar
         if not profile_update_data and not auth_update_payload and not auth_metadata:
             return {
                 "success": False,
                 "error": "Nenhum dado para atualizar"
             }
         
-        # Atualiza o auth.users primeiro
+        # Atualiza o auth.users primeiro (se necessário)
         if auth_update_payload or auth_metadata:
             try:
-                # Se há metadados para atualizar, busca o usuário atual para preservar outros metadados
+                # Se há metadados, mescla com os existentes
                 if auth_metadata:
                     current_user = client.auth.admin.get_user_by_id(user_id)
                     current_metadata = {}
@@ -300,18 +284,14 @@ def update_user(user_id: str, user_data: dict):
                     auth_update_payload["user_metadata"] = updated_metadata
                 
                 # Atualiza o usuário no auth
-                client.auth.admin.update_user_by_id(
-                    user_id,
-                    auth_update_payload
-                )
+                client.auth.admin.update_user_by_id(user_id, auth_update_payload)
             except Exception as auth_error:
-                # Se falhar ao atualizar o auth, retorna erro
                 return {
                     "success": False,
                     "error": f"Erro ao atualizar usuário no auth: {str(auth_error)}"
                 }
         
-        # Atualiza o profile em public.profiles
+        # Atualiza o profile em public.profiles (se necessário)
         if profile_update_data:
             profile_response = (
                 client
@@ -333,7 +313,7 @@ def update_user(user_id: str, user_data: dict):
                     "error": "Usuário não encontrado na tabela profiles"
                 }
         else:
-            # Se só atualizou o auth, busca o profile atualizado
+            # Se só atualizou o auth, busca o profile
             profile_response = (
                 client
                 .table("profiles")
@@ -346,7 +326,7 @@ def update_user(user_id: str, user_data: dict):
                 return {
                     "success": True,
                     "data": profile_response.data[0],
-                    "message": "Metadados do usuário atualizados com sucesso"
+                    "message": "Usuário atualizado com sucesso"
                 }
             else:
                 return {
