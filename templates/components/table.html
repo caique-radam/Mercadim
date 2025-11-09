@@ -19,20 +19,24 @@
                         {% endfor %}
                         <td>
                             {# Usa row[0] (ID/UUID) para as ações de editar e excluir #}
-                            <a href="{{ url_for('user.edit_user', id=row[0]) }}" class="btn btn-sm btn-primary">
+                            {% if edit_url %}
+                            <a href="{{ url_for(edit_url, id=row[0]) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <form method="POST" action="{{ url_for('user.delete_user', id=row[0]) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
+                            {% endif %}
+                            {% if delete_url %}
+                            <form method="POST" action="{{ url_for(delete_url, id=row[0]) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
                                 <button type="submit" class="btn btn-sm btn-danger">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="{{ headers|length }}" class="text-center text-muted py-4">
+                    <td colspan="{{ headers|length + 1 }}" class="text-center text-muted py-4">
                         Nenhum registro encontrado
                     </td>
                 </tr>

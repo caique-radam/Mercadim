@@ -17,36 +17,18 @@ def get_menu_sections(user_role: Optional[str] = None) -> List[Dict]:
     """
     sections = [
         {
-            'name': 'PRODUTOS',
+            'name': 'CADASTROS',
             'items': [
                 {
-                    'icon': 'bi-envelope',
-                    'text': 'Email',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-chat-dots',
-                    'text': 'Chat',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-check2-square',
-                    'text': 'Tarefas',
-                    'url': '#',
-                    'active': False
-                },
-                {
-                    'icon': 'bi-calendar3',
-                    'text': 'Calendário',
-                    'url': '#',
+                    'icon': 'bi-building',
+                    'text': 'Fornecedores',
+                    'url': url_for('fornecedores.fornecedores_view'),
                     'active': False
                 },
                 {
                     'icon': 'bi-cart4',
                     'text': 'Produtos',
-                    'url': '#',
+                    'url': url_for('produtos.produtos_view'),
                     'active': False
                 },
             ]
@@ -90,10 +72,10 @@ def get_menu_items(current_url: Optional[str] = None) -> List[Dict]:
             'active': current_url == '/' or current_url == '/dashboard'
         },
         {
-            'icon': 'bi-cart3',
+            'icon': 'bi-basket2',
             'text': 'Vendas',
-            'url': '/venda',
-            'active': current_url == '/venda'
+            'url': url_for('venda.venda_view'),
+            'active': False
         }
     ]
     

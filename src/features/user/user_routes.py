@@ -26,6 +26,8 @@ def user_view():
         headers=headers,
         rows=rows,
         add_url=url_for('user.create_user'),
+        edit_url='user.edit_user',
+        delete_url='user.delete_user',
         user=logged_user
     )
 
