@@ -60,7 +60,7 @@ body {
 
 .sidebar .brand-logo {
     width: 100%;
-    height: 100px; /* aumenta a área da logo, pode ajustar entre 80px e 120px */
+    height: auto; /* aumenta a área da logo, pode ajustar entre 80px e 120px */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -283,7 +283,8 @@ body {
     display: flex;
     flex-direction: column;
     height: calc(100vh - var(--topbar-height));
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .stat-card {
@@ -420,51 +421,29 @@ canvas {
     min-height: 100vh;
 }
 
-.login-card {
-    background: var(--color-surface);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 8px var(--shadow-color);
+/* Container da logo na página de login */
+.login-logo-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
 }
 
-.login-card .form-label {
-    color: var(--text-primary);
+.login-logo {
+    max-width: 100%;
+    max-height: 400px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
 }
 
-.login-card .form-control {
-    background: var(--color-surface-alt);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
+/* Estilos específicos para formulário de login dentro do login-container */
+.login-container .form-card {
+    border-radius: 12px;
 }
 
-.login-card .form-control:focus {
-    background: var(--color-surface-alt);
-    border-color: var(--color-primary);
-    color: var(--text-primary);
-    box-shadow: 0 0 0 0.2rem rgba(0, 183, 179, 0.25);
-}
-
-.login-card .form-check-label {
-    color: var(--text-secondary);
-}
-
-.login-card .btn-primary {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: var(--text-primary);
-}
-
-.login-card .btn-primary:hover {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    filter: brightness(1.2);
-    color: var(--text-primary);
-}
-
-.login-card .text-muted {
-    color: var(--text-secondary) !important;
-}
-
-.login-card .text-muted:hover {
+.login-container .form-card .text-muted:hover {
     color: var(--color-primary) !important;
 }
 
@@ -672,6 +651,86 @@ canvas {
 .list-card h3 {
     color: var(--text-primary);
     font-weight: 600;
+}
+
+/* Estilos para tabelas dentro de stat-card (dashboard) */
+.stat-card .table,
+.stat-card table.table {
+    color: var(--text-primary) !important;
+    margin-bottom: 0;
+    background-color: transparent !important;
+}
+
+.stat-card .table thead,
+.stat-card table.table thead {
+    background: var(--color-surface-alt) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+
+.stat-card .table thead th,
+.stat-card table.table thead th {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color) !important;
+    border-top: none !important;
+    padding: 12px;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+    background-color: var(--color-surface-alt) !important;
+}
+
+.stat-card .table tbody,
+.stat-card table.table tbody {
+    background-color: transparent !important;
+}
+
+.stat-card .table tbody tr,
+.stat-card table.table tbody tr {
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    transition: background-color 0.2s;
+}
+
+.stat-card .table.table-hover tbody tr:hover,
+.stat-card table.table.table-hover tbody tr:hover {
+    background: var(--color-surface-alt) !important;
+}
+
+.stat-card .table tbody tr:hover td,
+.stat-card table.table tbody tr:hover td {
+    background-color: transparent !important;
+}
+
+.stat-card .table tbody td,
+.stat-card table.table tbody td {
+    color: var(--text-primary) !important;
+    padding: 12px;
+    vertical-align: middle;
+    background-color: transparent !important;
+    border-color: var(--border-color) !important;
+}
+
+.stat-card .table tbody td.text-muted,
+.stat-card table.table tbody td.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Sobrescrever estilos do Bootstrap para tabelas dentro de stat-card */
+.stat-card .table > :not(caption) > * > * {
+    background-color: transparent !important;
+    border-bottom-width: 1px !important;
+    border-color: var(--border-color) !important;
+}
+
+.stat-card .table > tbody > tr > td,
+.stat-card .table > tbody > tr > th {
+    background-color: var(--color-surface) !important;
+}
+
+.stat-card .table > tbody > tr:hover > td,
+.stat-card .table > tbody > tr:hover > th {
+    background-color: var(--color-surface-alt) !important;
 }
 
 /* Sobrescrever estilos do Bootstrap para tabelas na listagem */
@@ -993,6 +1052,10 @@ canvas {
     border-top: 1px solid var(--border-color);
     padding: 24px;
     margin-top: auto;
+}
+
+.venda-total-section h5 {
+    color: var(--text-primary) !important;
 }
 
 .venda-total-value {

@@ -2,26 +2,64 @@ import time
 from src.core.database import supabase_client
 
 def list_users():
+    """
+    Lista todos os usuários combinando dados de profiles e auth.users
+    """
     try:
-        response = (
-            supabase_client()
-            .table("user_full")
+        client = supabase_client()
+        
+        # Busca todos os profiles
+        profiles_response = (
+            client
+            .table("profiles")
             .select("*")
             .execute()
         )
-
+        
+        if not profiles_response.data:
+            return {"success": True, "data": []}
+        
         users_data = []
-        for user in response.data:
-            # O primeiro elemento é o ID (UUID) - será usado nas ações mas não exibido na tabela
-            # O template usa row[1:] para pular o ID ao exibir as células
-            users_data.append([
-                user.get('id', ''),  # ID (UUID) - não será exibido
-                user.get('first_name', ''),
-                user.get('last_name', ''),
-                user.get('email', ''),
-                user.get('role', ''),
-                user.get('phone', '')
-            ])
+        
+        # Para cada profile, busca dados adicionais do auth.users
+        for profile in profiles_response.data:
+            user_id = profile.get('id')
+            if not user_id:
+                continue
+            
+            # Busca dados do auth.users usando API admin
+            try:
+                auth_user = client.auth.admin.get_user_by_id(user_id)
+                
+                # Combina dados do profile com dados do auth.users
+                email = auth_user.user.email if auth_user and auth_user.user else ''
+                phone = auth_user.user.phone if auth_user and auth_user.user else ''
+                # Role pode vir de user_metadata ou ser 'user' por padrão
+                role = 'user'  # Padrão
+                if auth_user and auth_user.user and auth_user.user.user_metadata:
+                    role = auth_user.user.user_metadata.get('role', 'user')
+                
+                # O primeiro elemento é o ID (UUID) - será usado nas ações mas não exibido na tabela
+                # O template usa row[1:] para pular o ID ao exibir as células
+                users_data.append([
+                    user_id,  # ID (UUID) - não será exibido
+                    profile.get('first_name', ''),
+                    profile.get('last_name', ''),
+                    email,
+                    role,
+                    phone or ''
+                ])
+            except Exception as auth_error:
+                # Se não conseguir buscar dados do auth, usa apenas dados do profile
+                # e deixa email, role e phone vazios
+                users_data.append([
+                    user_id,
+                    profile.get('first_name', ''),
+                    profile.get('last_name', ''),
+                    '',  # Email não disponível
+                    'user',  # Role padrão
+                    ''  # Phone não disponível
+                ])
 
         return {"success": True, "data": users_data}
     except Exception as e:
@@ -30,7 +68,7 @@ def list_users():
 
 def get_user_by_id(user_id: str):
     """
-    Busca um usuário pelo ID
+    Busca um usuário pelo ID combinando dados de profiles e auth.users
     
     Args:
         user_id: ID do usuário (UUID)
@@ -43,25 +81,59 @@ def get_user_by_id(user_id: str):
         }
     """
     try:
-        response = (
-            supabase_client()
-            .table("user_full")
+        client = supabase_client()
+        
+        # Busca o profile
+        profile_response = (
+            client
+            .table("profiles")
             .select("*")
             .eq("id", user_id)
             .execute()
         )
         
-        if response.data and len(response.data) > 0:
-            user = response.data[0]
-            return {
-                "success": True,
-                "data": user
-            }
-        else:
+        if not profile_response.data or len(profile_response.data) == 0:
             return {
                 "success": False,
                 "error": "Usuário não encontrado"
             }
+        
+        profile = profile_response.data[0]
+        
+        # Busca dados adicionais do auth.users
+        try:
+            auth_user = client.auth.admin.get_user_by_id(user_id)
+            
+            # Combina dados do profile com dados do auth.users
+            user_data = {
+                **profile,  # Todos os campos do profile
+                'email': auth_user.user.email if auth_user and auth_user.user else '',
+                'phone': auth_user.user.phone if auth_user and auth_user.user else '',
+            }
+            
+            # Role pode vir de user_metadata
+            if auth_user and auth_user.user and auth_user.user.user_metadata:
+                user_data['role'] = auth_user.user.user_metadata.get('role', 'user')
+            else:
+                user_data['role'] = 'user'
+            
+            return {
+                "success": True,
+                "data": user_data
+            }
+        except Exception as auth_error:
+            # Se não conseguir buscar dados do auth, retorna apenas dados do profile
+            user_data = {
+                **profile,
+                'email': '',
+                'phone': '',
+                'role': 'user'
+            }
+            return {
+                "success": True,
+                "data": user_data
+            }
+            
     except Exception as e:
         return {"success": False, "error": str(e)}
 

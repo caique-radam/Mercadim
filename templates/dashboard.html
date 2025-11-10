@@ -12,9 +12,343 @@
 
     <!-- Content Area -->
     <div class="content-area">
-        {% block content_area %}{% endblock %}
+        {% block content_area %}
+        <div class="container-fluid pb-4">
+            <h2 class="mb-4" style="color: var(--text-primary);">Dashboard</h2>
+            
+            <!-- Cards de Resumo -->
+            <div class="row g-4 mb-4">
+                <!-- Receita Hoje -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <p class="stat-label mb-1">Receita Hoje</p>
+                                <h3 class="stat-value mb-0">{{ receita.receita_hoje|format_currency }}</h3>
+                            </div>
+                            <div class="stat-icon purple">
+                                <i class="bi bi-cash-coin"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">Receita do Mês: {{ receita.receita_mes|format_currency }}</small>
+                            {% if receita.variacao_percentual != 0 %}
+                            <div class="stat-change {% if receita.variacao_percentual < 0 %}negative{% endif %} mt-1">
+                                <i class="bi bi-arrow-{% if receita.variacao_percentual >= 0 %}up{% else %}down{% endif %}"></i>
+                                {{ "%.1f"|format(receita.variacao_percentual|abs) }}% vs mês anterior
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Vendas Hoje -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <p class="stat-label mb-1">Vendas Hoje</p>
+                                <h3 class="stat-value mb-0">{{ vendas.vendas_hoje }}</h3>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="bi bi-cart-check"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">Ontem: {{ vendas.vendas_ontem }} vendas</small>
+                            {% if vendas.variacao != 0 %}
+                            <div class="stat-change {% if vendas.variacao < 0 %}negative{% endif %} mt-1">
+                                <i class="bi bi-arrow-{% if vendas.variacao >= 0 %}up{% else %}down{% endif %}"></i>
+                                {{ vendas.variacao|abs }} {% if vendas.variacao >= 0 %}mais{% else %}menos{% endif %} que ontem
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ticket Médio -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <p class="stat-label mb-1">Ticket Médio</p>
+                                <h3 class="stat-value mb-0">{{ ticket_medio.ticket_medio_hoje|format_currency }}</h3>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="bi bi-receipt"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">Mês: {{ ticket_medio.ticket_medio_mes|format_currency }}</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Valor em Estoque -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <p class="stat-label mb-1">Valor em Estoque</p>
+                                <h3 class="stat-value mb-0">{{ valor_estoque|format_currency }}</h3>
+                            </div>
+                            <div class="stat-icon purple">
+                                <i class="bi bi-boxes"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <small class="text-muted">Capital imobilizado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráfico e Top Produtos -->
+            <div class="row g-4 mb-4">
+                <!-- Gráfico de Vendas -->
+                <div class="col-lg-8">
+                    <div class="chart-card">
+                        <div class="card-header-custom">
+                            <h5 class="card-title">
+                                <i class="bi bi-graph-up me-2" style="color: var(--color-primary);"></i>
+                                Vendas dos Últimos 7 Dias
+                            </h5>
+                        </div>
+                        <canvas id="vendasChart" style="max-height: 300px;"></canvas>
+                        <script type="application/json" id="vendasData">{{ vendas_grafico|tojson|safe }}</script>
+                    </div>
+                </div>
+                
+                <!-- Top 5 Produtos -->
+                <div class="col-lg-4">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h5 class="card-title mb-3" style="color: var(--text-primary);">
+                                    <i class="bi bi-trophy me-2" style="color: var(--color-accent);"></i>
+                                    Top 5 Produtos
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="list-table-container" style="max-height: 300px; overflow-y: auto;">
+                            {% if top_produtos %}
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Produto</th>
+                                            <th>Qtd</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for produto in top_produtos %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge {% if loop.index == 1 %}bg-warning{% elif loop.index == 2 %}bg-secondary{% elif loop.index == 3 %}bg-info{% else %}bg-dark{% endif %}">
+                                                    {{ loop.index }}
+                                                </span>
+                                            </td>
+                                            <td>{{ produto.nome }}</td>
+                                            <td>{{ "%.0f"|format(produto.quantidade_total) }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted text-center py-4">Nenhuma venda registrada ainda.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cards Informativos -->
+            <div class="row g-4 mb-4">
+                <!-- Card 1: Produtos Próximos do Vencimento -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h5 class="card-title mb-3" style="color: var(--text-primary);">
+                                    <i class="bi bi-calendar-x me-2" style="color: var(--color-warning);"></i>
+                                    Produtos Próximos do Vencimento
+                                </h5>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="bi bi-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="list-table-container" style="max-height: 400px; overflow-y: auto;">
+                            {% if produtos_vencimento %}
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Vencimento</th>
+                                            <th>Dias</th>
+                                            <th>Estoque</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for produto in produtos_vencimento %}
+                                        <tr>
+                                            <td>{{ produto.nome }}</td>
+                                            <td>{{ produto.validade_lote }}</td>
+                                            <td>
+                                                <span class="badge {% if produto.dias_para_vencer <= 7 %}bg-danger{% elif produto.dias_para_vencer <= 15 %}bg-warning{% else %}bg-info{% endif %}">
+                                                    {{ produto.dias_para_vencer }} dias
+                                                </span>
+                                            </td>
+                                            <td>{{ produto.quantidade|format_number }} {{ produto.uni_medida }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted text-center py-4">Nenhum produto próximo do vencimento nos próximos 30 dias.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 2: Produto Mais Vendido -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h5 class="card-title mb-3" style="color: var(--text-primary);">
+                                    <i class="bi bi-trophy me-2" style="color: var(--color-accent);"></i>
+                                    Produto Mais Vendido
+                                </h5>
+                            </div>
+                            <div class="stat-icon orange">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px;">
+                            {% if produto_mais_vendido %}
+                                <div class="text-center">
+                                    <i class="bi bi-trophy-fill" style="font-size: 4rem; color: var(--color-accent); margin-bottom: 20px;"></i>
+                                    <h3 style="color: var(--text-primary); margin-bottom: 10px;">{{ produto_mais_vendido.nome }}</h3>
+                                    <p class="text-muted mb-2">Quantidade Vendida</p>
+                                    <h2 style="color: var(--color-primary); font-weight: bold;">
+                                        {{ "%.0f"|format(produto_mais_vendido.quantidade_total) }}
+                                    </h2>
+                                </div>
+                            {% else %}
+                                <p class="text-muted text-center">Nenhuma venda registrada ainda.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card 3: Produtos com Estoque Baixo -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <h5 class="card-title mb-3" style="color: var(--text-primary);">
+                                    <i class="bi bi-box-seam me-2" style="color: var(--color-error);"></i>
+                                    Estoque Baixo
+                                </h5>
+                            </div>
+                            <div class="stat-icon purple">
+                                <i class="bi bi-exclamation-circle"></i>
+                            </div>
+                        </div>
+                        <div class="list-table-container" style="max-height: 400px; overflow-y: auto;">
+                            {% if produtos_estoque_baixo %}
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Quantidade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for produto in produtos_estoque_baixo %}
+                                        <tr>
+                                            <td>{{ produto.nome }}</td>
+                                            <td>
+                                                <span class="badge bg-danger">
+                                                    {{ produto.quantidade|format_number }} {{ produto.uni_medida }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted text-center py-4">Nenhum produto com estoque baixo.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
     </div>
 
-    {% block script %}{% endblock %}
+    {% block script %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Gráfico de Vendas dos Últimos 7 Dias
+        const vendasDataElement = document.getElementById('vendasData');
+        const vendasData = vendasDataElement ? JSON.parse(vendasDataElement.textContent) : [];
+        
+        if (vendasData && vendasData.length > 0) {
+            const ctx = document.getElementById('vendasChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: vendasData.map(item => item.data),
+                        datasets: [{
+                            label: 'Receita (R$)',
+                            data: vendasData.map(item => item.valor),
+                            borderColor: 'rgb(0, 183, 179)',
+                            backgroundColor: 'rgba(0, 183, 179, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#B0BEC5'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#B0BEC5',
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toFixed(2).replace('.', ',');
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(46, 59, 85, 0.5)'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#B0BEC5'
+                                },
+                                grid: {
+                                    color: 'rgba(46, 59, 85, 0.5)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+    {% endblock %}
 </div>
 {% endblock %}
