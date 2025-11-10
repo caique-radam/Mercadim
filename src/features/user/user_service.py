@@ -16,51 +16,49 @@ def list_users():
             .execute()
         )
         
-        if not profiles_response.data:
-            return {"success": True, "data": []}
-        
+        # Inicializa a lista de usuários
         users_data = []
         
-        # Para cada profile, busca dados adicionais do auth.users
-        for profile in profiles_response.data:
-            user_id = profile.get('id')
-            if not user_id:
-                continue
-            
-            # Busca dados do auth.users usando API admin
-            try:
-                auth_user = client.auth.admin.get_user_by_id(user_id)
+        # Verifica se há dados na resposta antes de iterar
+        if profiles_response.data and len(profiles_response.data) > 0:
+            # Para cada profile, busca dados adicionais do auth.users
+            for profile in profiles_response.data:
+                user_id = profile.get('id')
+                if not user_id:
+                    continue
                 
-                # Combina dados do profile com dados do auth.users
-                email = auth_user.user.email if auth_user and auth_user.user else ''
-                phone = auth_user.user.phone if auth_user and auth_user.user else ''
-                # Role pode vir de user_metadata ou ser 'user' por padrão
+                # Busca dados do auth.users usando API admin
+                email = ''
+                phone = ''
                 role = 'user'  # Padrão
-                if auth_user and auth_user.user and auth_user.user.user_metadata:
-                    role = auth_user.user.user_metadata.get('role', 'user')
+                
+                try:
+                    auth_user = client.auth.admin.get_user_by_id(user_id)
+                    
+                    # Combina dados do profile com dados do auth.users
+                    if auth_user and hasattr(auth_user, 'user') and auth_user.user:
+                        email = auth_user.user.email or ''
+                        phone = auth_user.user.phone or ''
+                        # Role pode vir de user_metadata ou ser 'user' por padrão
+                        if hasattr(auth_user.user, 'user_metadata') and auth_user.user.user_metadata:
+                            role = auth_user.user.user_metadata.get('role', 'user')
+                except Exception as auth_error:
+                    # Se não conseguir buscar dados do auth, usa apenas dados do profile
+                    # e deixa email, role e phone vazios (já inicializados acima)
+                    pass
                 
                 # O primeiro elemento é o ID (UUID) - será usado nas ações mas não exibido na tabela
                 # O template usa row[1:] para pular o ID ao exibir as células
                 users_data.append([
                     user_id,  # ID (UUID) - não será exibido
-                    profile.get('first_name', ''),
-                    profile.get('last_name', ''),
+                    profile.get('first_name', '') or '',
+                    profile.get('last_name', '') or '',
                     email,
                     role,
                     phone or ''
                 ])
-            except Exception as auth_error:
-                # Se não conseguir buscar dados do auth, usa apenas dados do profile
-                # e deixa email, role e phone vazios
-                users_data.append([
-                    user_id,
-                    profile.get('first_name', ''),
-                    profile.get('last_name', ''),
-                    '',  # Email não disponível
-                    'user',  # Role padrão
-                    ''  # Phone não disponível
-                ])
 
+        # Sempre retorna success=True com os dados (mesmo que vazio)
         return {"success": True, "data": users_data}
     except Exception as e:
         return {"success": False, "error": str(e)}
