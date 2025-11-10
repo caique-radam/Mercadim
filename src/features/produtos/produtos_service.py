@@ -72,23 +72,31 @@ def prepare_data(produto_data: dict, is_update=False):
     return prepared
 
 
-def list_produtos():
+def list_produtos(limit=100, offset=0):
     """
-    Lista todos os produtos da tabela produtos com informações do fornecedor
+    Lista produtos da tabela produtos com informações do fornecedor
+    Otimizado com paginação
+    
+    Args:
+        limit: Número máximo de produtos a retornar (padrão: 100)
+        offset: Número de registros a pular (padrão: 0)
     
     Returns:
         {
             'success': bool,
             'data': list de listas com dados dos produtos (se success=True),
-            'error': str (se success=False)
+            'error': str (se success=False),
+            'total': int (total de produtos, se disponível)
         }
     """
     try:
-        # Busca produtos com join no fornecedor
+        # Busca produtos com join no fornecedor, com limite e offset
         response = (
             supabase_client()
             .table("produtos")
-            .select("*, fornecedores(nome_fantasia)")
+            .select("*, fornecedores(nome_fantasia)", count="exact")
+            .order("id", desc=True)
+            .range(offset, offset + limit - 1)
             .execute()
         )
 
@@ -135,7 +143,11 @@ def list_produtos():
                 fornecedor_nome
             ])
 
-        return {"success": True, "data": produtos_data}
+        # Retorna dados com total (se disponível)
+        result = {"success": True, "data": produtos_data}
+        if hasattr(response, 'count') and response.count is not None:
+            result['total'] = response.count
+        return result
     except Exception as e:
         return {"success": False, "error": str(e)}
 
