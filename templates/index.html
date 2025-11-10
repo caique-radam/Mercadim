@@ -7,17 +7,15 @@
   <div class="row w-100 mx-0 justify-content-center align-items-center">
 
     <!-- Lado esquerdo -->
-    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0 px-5">
-      <img src="{{ url_for('static', filename='img/logo_mercadim.png') }}" alt="Mercadim" class="logo">
+    <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0 px-5 d-flex align-items-center">
+      <div class="login-logo-container">
+        <img src="{{ url_for('static', filename='img/logo_mercadim.png') }}" alt="Mercadim" class="login-logo">
+      </div>
     </div>
 
     <!-- Lado direito (formulário de login) -->
-    <div class="col-lg-4">
-      <div class="card login-card shadow-lg border-0 rounded-4 p-4">
-        <div class="card-body">
-          {% block form %}{% endblock %}
-        </div>
-      </div>
+    <div class="col-lg-4 d-flex align-items-center">
+      {% block form %}{% endblock %}
     </div>
 
   </div>

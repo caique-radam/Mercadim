@@ -80,7 +80,7 @@ def get_menu_items(current_url: Optional[str] = None) -> List[Dict]:
         {
             'icon': 'bi-speedometer2',
             'text': 'Dashboard',
-            'url': '/',
+            'url': url_for('dashboard.dashboard_view'),
             'active': current_url == '/' or current_url == '/dashboard'
         },
         {

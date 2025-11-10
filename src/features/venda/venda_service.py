@@ -1,8 +1,12 @@
 from src.core.database import supabase_client
 
-def list_produtos_disponiveis():
+def list_produtos_disponiveis(limit=500):
     """
     Lista produtos disponíveis (quantidade > 0) para venda
+    Otimizado com limite
+    
+    Args:
+        limit: Número máximo de produtos a retornar (padrão: 500)
     
     Returns:
         {
@@ -12,12 +16,14 @@ def list_produtos_disponiveis():
         }
     """
     try:
-        # Busca produtos diretamente do banco
+        # Busca produtos diretamente do banco, com limite
         response = (
             supabase_client()
             .table("produtos")
             .select("id, nome, preco_venda, quantidade, uni_medida, codigo_barra")
             .gt("quantidade", 0)
+            .order("nome", desc=False)
+            .limit(limit)
             .execute()
         )
 
@@ -142,6 +148,13 @@ def salvar_venda(carrinho: list, forma_pagamento: str, user_id: int):
                 .execute()
             )
         
+        # Limpa cache do dashboard após nova venda
+        try:
+            from src.features.dashboard.dashboard_service import clear_dashboard_cache
+            clear_dashboard_cache()
+        except:
+            pass  # Não falha se não conseguir limpar cache
+        
         return {
             "success": True,
             "message": "Venda finalizada com sucesso",
@@ -152,23 +165,30 @@ def salvar_venda(carrinho: list, forma_pagamento: str, user_id: int):
         return {"success": False, "error": f"Erro ao salvar venda: {str(e)}"}
 
 
-def list_vendas():
+def list_vendas(limit=100, offset=0):
     """
-    Lista todas as vendas da tabela vendas
+    Lista vendas da tabela vendas
+    Otimizado com paginação
+    
+    Args:
+        limit: Número máximo de vendas a retornar (padrão: 100)
+        offset: Número de registros a pular (padrão: 0)
     
     Returns:
         {
             'success': bool,
             'data': list de listas com dados das vendas (se success=True),
-            'error': str (se success=False)
+            'error': str (se success=False),
+            'total': int (total de vendas, se disponível)
         }
     """
     try:
         response = (
             supabase_client()
             .table("vendas")
-            .select("*")
+            .select("*", count="exact")
             .order("data_venda", desc=True)
+            .range(offset, offset + limit - 1)
             .execute()
         )
 
@@ -202,7 +222,11 @@ def list_vendas():
                 metodo_str
             ])
 
-        return {"success": True, "data": vendas_data}
+        # Retorna dados com total (se disponível)
+        result = {"success": True, "data": vendas_data}
+        if hasattr(response, 'count') and response.count is not None:
+            result['total'] = response.count
+        return result
     except Exception as e:
         return {"success": False, "error": str(e)}
 

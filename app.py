@@ -6,6 +6,8 @@ from src.features.profile import profile_bp
 from src.features.user import user_bp
 from src.features.fornecedores import fornecedores_bp
 from src.features.produtos import produtos_bp
+from src.features.venda import venda_bp
+from src.features.dashboard import dashboard_bp
 from config import Config
 from src.core import init_supabase
 from src.common.interface import get_interface_context
@@ -14,8 +16,6 @@ from src.common.template_utils import (
     calcular_total_itens, get_produto_by_id
 )
 import os
-from flask import render_template
-from src.features.venda import venda_bp
 
 app = Flask(
     __name__,
@@ -38,6 +38,7 @@ app.register_blueprint(user_bp)
 app.register_blueprint(fornecedores_bp)
 app.register_blueprint(produtos_bp)
 app.register_blueprint(venda_bp)
+app.register_blueprint(dashboard_bp)
 
 # ============================================
 # REGISTRO DE FILTROS CUSTOMIZADOS
@@ -68,10 +69,9 @@ def inject_interface_context():
 @app.route('/')
 def index():
     """Redireciona para login ou dashboard dependendo do estado de autenticação"""
-    from flask import session
-    from flask import redirect, url_for
+    from flask import session, redirect, url_for
     if 'user' in session:
-        return render_template('dashboard.html', user=session['user']), 200
+        return redirect(url_for('dashboard.dashboard_view'))
     return redirect(url_for('auth.login'))
 
 # Tratamento de erros

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Painel - Mercadim{% endblock %}
+
+{% block content %}
+
+{% include 'components/sidebar.html' %}
+
+<!-- Main Content -->
+<div class="main-content">
+    {% include 'components/topbar.html' %}
+
+    <!-- Content Area -->
+    <div class="content-area">
+        {% block content_area %}
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}

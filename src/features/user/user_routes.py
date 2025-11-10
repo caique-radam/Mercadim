@@ -169,7 +169,8 @@ def user_view():
         users_data['data'] = []
 
     headers = ["Primeiro Nome", "Último Nome", "Email", "Role", "Telefone"]
-    rows = users_data['data']
+    # Garante que rows é sempre uma lista
+    rows = users_data.get('data', []) if isinstance(users_data.get('data'), list) else []
     
     return render_template(
         'user/list_user.html',
